@@ -25,7 +25,7 @@ namespace FotosDaPiteca.Classes
             }
         }
 
-        public static byte[] RenderFinal(byte[] Original, bool UseWatermark, string Watermark, string WatermarkPosition, string WatermarkColor, string WatermarkFont)
+        public static byte[] RenderFinal(byte[] Original, bool UseWatermark, string Watermark, string WatermarkPosition, string WatermarkColor, string WatermarkFont, int WatermarkFontSize)
         {
             using (MemoryStream ms = new MemoryStream(Original))
             {
@@ -33,11 +33,14 @@ namespace FotosDaPiteca.Classes
                 {
                     using (Graphics gr = Graphics.FromImage(bm))
                     {
+                        gr.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+                        gr.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.HighQuality;
                         if (UseWatermark)
                         {
-                            SizeF s = gr.MeasureString(Watermark,new Font(WatermarkFont, 24));
-
-                            gr.DrawString(Watermark, new Font(WatermarkFont, 24), Brushes.Black, new PointF(0, 0));
+                            SizeF s = gr.MeasureString(Watermark,new Font(WatermarkFont, WatermarkFontSize));
+                            float midW = (bm.Width / 2) - (s.Width / 2);
+                            float midH = (bm.Height / 2) - (s.Height / 2);
+                            gr.DrawString(Watermark, new Font(WatermarkFont, WatermarkFontSize), new SolidBrush(System.Drawing.ColorTranslator.FromHtml(WatermarkColor)), new PointF(midW, midH));
                         }
                         
                     }

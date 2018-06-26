@@ -80,42 +80,78 @@
                         <RowDefinition Height="*" />
                         <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
-                    <Image Source="{Binding FotoSelecionada.RenderedImage}" Margin="5" Stretch="Uniform" />
-                    <!--<Button Grid.Row="0" 
-                                            Style="{StaticResource MaterialDesignFloatingActionMiniAccentButton}" 
-                                            HorizontalAlignment="Right" 
-                                            VerticalAlignment="Bottom" 
-                                            Margin="0 0 16 -20"
-                                            Command="{Binding Path=DataContext.ExecutaCommando, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:MainWindow}}}"
-                                            CommandParameter="{Binding}">
-
-                        <materialDesign:PackIcon Kind="ContentSave" />
-                    </Button>-->
-                    <StackPanel Grid.Row="1" Margin="5" >
+                    <Grid Grid.Row="0">
+                        <Image Source="{Binding FotoSelecionada.RenderedImage}" Margin="5" Stretch="Uniform" />
+                        <ProgressBar Value="50"
+                                 IsIndeterminate="{Binding FotoSelecionada.IsLoading}"
+                                     VerticalAlignment="Bottom"
+                             Height="5"
+                                     Visibility="{Binding FotoSelecionada.ShowProgress}"/>
+                    </Grid>
+                    
+                    
+                    <StackPanel Grid.Row="1" >
                         <TextBox Text="{Binding FotoSelecionada.Name}" Margin="5" materialDesign:HintAssist.Hint="Nome" Style="{StaticResource MaterialDesignFloatingHintTextBox}"/>
-                        <StackPanel Margin="5">
-                            <CheckBox x:Name="cbWatermark" IsChecked="{Binding FotoSelecionada.UseWaterMark}">Usar Marca de Água</CheckBox>
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="Auto"/>
-                                </Grid.ColumnDefinitions>
-                                <TextBox Text="{Binding FotoSelecionada.WaterMark}" FontFamily="{Binding FotoSelecionada.WaterMarkFont}" IsEnabled="{Binding FotoSelecionada.UseWaterMark}" materialDesign:HintAssist.Hint="Marca de água" Style="{StaticResource MaterialDesignFloatingHintTextBox}"/>
-                                <Button Grid.Column="1" 
+                        <materialDesign:Card Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                            <StackPanel Margin="5">
+                                <CheckBox x:Name="cbWatermark" IsChecked="{Binding FotoSelecionada.UseWaterMark}">Usar Marca de Água</CheckBox>
+                                <Grid Margin="5">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBox Text="{Binding FotoSelecionada.WaterMark}" FontFamily="{Binding FotoSelecionada.WaterMarkFont}" IsEnabled="{Binding FotoSelecionada.UseWaterMark}" materialDesign:HintAssist.Hint="Marca de água" Style="{StaticResource MaterialDesignFloatingHintTextBox}" Margin="0,0,20,0"/>
+                                    <Button Grid.Column="1" 
                                             HorizontalAlignment="Right" 
                                             VerticalAlignment="Bottom" 
                                             Margin="0"
                                             Command="{Binding Path=DataContext.SelecionarFont, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:MainWindow}}}"
-                                            CommandParameter="{Binding}">
-                                    <StackPanel Orientation="Horizontal">
-                                        <materialDesign:PackIcon Kind="Palette" Foreground="{Binding FotoSelecionada.WaterMarkColor}" />
+                                            CommandParameter="{Binding}"
+                                             IsEnabled="{Binding FotoSelecionada.UseWaterMark}">
+                                        <StackPanel Orientation="Horizontal">
+                                            <materialDesign:PackIcon Kind="Palette" Foreground="{Binding FotoSelecionada.WaterMarkColor}" />
+
+                                        </StackPanel>
+
+                                    </Button>
+                                </Grid>
+                                <Grid Margin="5">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <ComboBox materialDesign:HintAssist.Hint="Tipo de Letra"
+                                              IsEditable="True"
+                                              Style="{StaticResource MaterialDesignFloatingHintComboBox}"
+                                              Text="{Binding FotoSelecionada.WaterMarkFont}"
+                                              Grid.Column="0"
+                                              Margin="0,0,10,0"
+                                               IsEnabled="{Binding FotoSelecionada.UseWaterMark}"
+                                              ItemsSource="{Binding Path=DataContext.TiposLetra, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:MainWindow}}}">
+                                        <ComboBox.ItemsPanel>
+                                            <ItemsPanelTemplate>
+                                                <VirtualizingStackPanel />
+                                            </ItemsPanelTemplate>
+                                        </ComboBox.ItemsPanel>
+                                    </ComboBox>
+                                    <ComboBox materialDesign:HintAssist.Hint="Tamanho de Letra"
+                                              IsEditable="True"
+                                              Style="{StaticResource MaterialDesignFloatingHintComboBox}"
+                                              Text="{Binding FotoSelecionada.WaterMarkFontSize}"
+                                              Grid.Column="1"
+                                              Margin="10,0,0,0"
+                                              IsEnabled="{Binding FotoSelecionada.UseWaterMark}"
+                                              ItemsSource="{Binding Path=DataContext.TamanhosLetra, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:MainWindow}}}">
+                                        <ComboBox.ItemsPanel>
+                                            <ItemsPanelTemplate>
+                                                <VirtualizingStackPanel />
+                                            </ItemsPanelTemplate>
+                                        </ComboBox.ItemsPanel>
                                         
-                                    </StackPanel>
-                                    
-                                </Button>
-                            </Grid>
-                            
-                        </StackPanel>
+                                    </ComboBox>
+                                </Grid>
+                            </StackPanel>
+                        </materialDesign:Card>
                     </StackPanel>
                 </Grid>
             </materialDesign:Card>

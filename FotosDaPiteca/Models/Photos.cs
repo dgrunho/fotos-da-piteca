@@ -145,16 +145,16 @@ namespace FotosDaPiteca.Models
             }
         }
 
-        int _WaterMarkSize = 24;
-        public int WaterMarkSize
+        int _WaterMarkFontSize = 120;
+        public int WaterMarkFontSize
         {
-            get { return _WaterMarkSize; }
+            get { return _WaterMarkFontSize; }
             set
             {
-                if (_WaterMarkSize != value)
+                if (_WaterMarkFontSize != value)
                 {
-                    _WaterMarkSize = value;
-                    RaisePropertyChanged("WaterMarkSize");
+                    _WaterMarkFontSize = value;
+                    RaisePropertyChanged("WaterMarkFontSize");
                     if (UseWaterMark)
                     {
                         RenderImage();
@@ -196,13 +196,60 @@ namespace FotosDaPiteca.Models
             }
         }
 
-        void RenderImage()
+        bool _IsLoading = false;
+        public bool IsLoading
+        {
+            get
+            {
+                return _IsLoading;
+            }
+            set
+            {
+                if (_IsLoading != value)
+                {
+                    _IsLoading = value;
+                    RaisePropertyChanged("IsLoading");
+                    if (_IsLoading)
+                    {
+                        ShowProgress = System.Windows.Visibility.Visible;
+                    }
+                    else
+                    {
+                        ShowProgress = System.Windows.Visibility.Collapsed;
+                    }
+                }
+            }
+        }
+
+        System.Windows.Visibility _ShowProgress = System.Windows.Visibility.Collapsed;
+        public System.Windows.Visibility ShowProgress
+        {
+            get
+            {
+                return _ShowProgress;
+            }
+            set
+            {
+                if (_ShowProgress != value)
+                {
+                    _ShowProgress = value;
+                    RaisePropertyChanged("ShowProgress");
+                    
+                }
+            }
+        }
+
+        async void RenderImage()
         {
             if (Image != null)
             {
-                
-                RenderedImage = PhotoHelper.RenderFinal(Image, UseWaterMark, WaterMark, WaterMarkPosition, WaterMarkColor, WaterMarkFont);
-                RenderedThumb = PhotoHelper.RenderThumb(RenderedImage, 196, 140);
+                IsLoading = true;
+                await Task.Factory.StartNew(() =>
+                {
+                    RenderedImage = PhotoHelper.RenderFinal(Image, UseWaterMark, WaterMark, WaterMarkPosition, WaterMarkColor, WaterMarkFont, WaterMarkFontSize);
+                    RenderedThumb = PhotoHelper.RenderThumb(RenderedImage, 196, 140);
+                });
+                IsLoading = false;
             }
             
         }

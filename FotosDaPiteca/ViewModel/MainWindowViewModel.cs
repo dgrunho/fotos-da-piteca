@@ -16,6 +16,7 @@ using System.IO;
 using WpfColorFontDialog;
 using ColorPickerWPF;
 using System.Windows.Media;
+using System.Drawing.Text;
 
 namespace FotosDaPiteca.ViewModel
 {
@@ -56,6 +57,34 @@ namespace FotosDaPiteca.ViewModel
                     RaisePropertyChanged("Fotos");
                 }
             }
+        }
+
+        ObservableCollection<string> _TiposLetra = new ObservableCollection<string>();
+        public ObservableCollection<string> TiposLetra
+        {
+            get
+            {
+                return _TiposLetra;
+            }
+            set
+            {
+                if (_TiposLetra != value)
+                {
+                    _TiposLetra = value;
+                    RaisePropertyChanged("TiposLetra");
+                }
+            }
+        }
+
+        public List<int> TamanhosLetra
+        {
+            get
+            {
+                List<int> _TamanhoLetra = new List<int>();
+                _TamanhoLetra.AddRange(new int[] { 20, 40, 60, 80, 100, 120, 140, 160, 180, 200, 220, 240 });
+                return _TamanhoLetra;
+            }
+
         }
 
         Photo _FotoSelecionada ;
@@ -115,6 +144,7 @@ namespace FotosDaPiteca.ViewModel
 
         public MainWindowViewModel()
         {
+            loadTiposLetra();
             if (!DesignerProperties.GetIsInDesignMode(new DependencyObject()))
             {
                 List<FileInfo> files = new List<FileInfo>();
@@ -124,7 +154,7 @@ namespace FotosDaPiteca.ViewModel
                 files.Add(new FileInfo("C:\\Users\\0101410\\Desktop\\Photos\\1 (4).jpg"));
                 files.Add(new FileInfo("C:\\Users\\0101410\\Desktop\\Photos\\1 (5).jpg"));
                 load(files);
-                FotoSelecionada = new Photo(files[0]);
+                //FotoSelecionada = new Photo(files[0]);
             }
             else
             {
@@ -135,7 +165,7 @@ namespace FotosDaPiteca.ViewModel
                 files.Add(new FileInfo("C:\\Users\\0101410\\Desktop\\Photos\\1 (4).jpg"));
                 files.Add(new FileInfo("C:\\Users\\0101410\\Desktop\\Photos\\1 (5).jpg"));
                 load(files);
-                FotoSelecionada = new Photo(files[0]);
+                //FotoSelecionada = new Photo(files[0]);
             }
         }
 
@@ -230,6 +260,26 @@ namespace FotosDaPiteca.ViewModel
             });
             IsLoading = false;
             ShowProgress = Visibility.Collapsed;
+        }
+
+        async void loadTiposLetra()
+        {
+            await Task.Factory.StartNew(() =>
+            {
+                InstalledFontCollection installedFontCollection = new InstalledFontCollection();
+
+                // Get the array of FontFamily objects.
+                ObservableCollection<string> _tiposLetra = new ObservableCollection<string>();
+                foreach (System.Drawing.FontFamily fs in installedFontCollection.Families)
+                {
+                    _tiposLetra.Add(fs.Name);
+                }
+
+                App.Current.Dispatcher.Invoke((Action)delegate
+                {
+                    TiposLetra = _tiposLetra;
+                });
+            });
         }
 
         #endregion

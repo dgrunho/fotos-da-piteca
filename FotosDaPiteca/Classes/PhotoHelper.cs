@@ -27,13 +27,16 @@ namespace FotosDaPiteca.Classes
 
         public static byte[] RenderFinal(byte[] Original, bool UseWatermark, string Watermark, string WatermarkPosition, string WatermarkColor, string WatermarkFont)
         {
-            using (MemoryStream ms = new MemoryStream(Original)) {
+            using (MemoryStream ms = new MemoryStream(Original))
+            {
                 using (Bitmap bm = new Bitmap(ms))
                 {
                     using (Graphics gr = Graphics.FromImage(bm))
                     {
                         if (UseWatermark)
                         {
+                            SizeF s = gr.MeasureString(Watermark,new Font(WatermarkFont, 24));
+
                             gr.DrawString(Watermark, new Font(WatermarkFont, 24), Brushes.Black, new PointF(0, 0));
                         }
                         

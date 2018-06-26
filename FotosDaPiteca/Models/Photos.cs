@@ -145,6 +145,24 @@ namespace FotosDaPiteca.Models
             }
         }
 
+        int _WaterMarkSize = 24;
+        public int WaterMarkSize
+        {
+            get { return _WaterMarkSize; }
+            set
+            {
+                if (_WaterMarkSize != value)
+                {
+                    _WaterMarkSize = value;
+                    RaisePropertyChanged("WaterMarkSize");
+                    if (UseWaterMark)
+                    {
+                        RenderImage();
+                    }
+                }
+            }
+        }
+
         string _WaterMarkPosition = "Center";
         public string WaterMarkPosition
         {

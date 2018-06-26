@@ -80,7 +80,7 @@
                         <RowDefinition Height="*" />
                         <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
-                    <Image Source="{Binding FotoSelecionada.Image}" Margin="5" Stretch="Uniform" />
+                    <Image Source="{Binding FotoSelecionada.RenderedImage}" Margin="5" Stretch="Uniform" />
                     <!--<Button Grid.Row="0" 
                                             Style="{StaticResource MaterialDesignFloatingActionMiniAccentButton}" 
                                             HorizontalAlignment="Right" 

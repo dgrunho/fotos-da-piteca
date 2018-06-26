@@ -40,23 +40,48 @@
                 <TextBlock HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="22">Teste</TextBlock>
             </DockPanel>
         </materialDesign:ColorZone>
-        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
-            <ItemsControl x:Name="icDados" ItemsSource="{Binding Fotos}" Margin="5">
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="300"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <ListView ItemsSource="{Binding Fotos}" SelectedItem="{Binding FotoSelecionada}">
+                <ListView.ItemContainerStyle>
+                    <Style TargetType="ListViewItem" BasedOn="{StaticResource MaterialDesignListBoxItem}">
+                        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                    </Style>
+                </ListView.ItemContainerStyle>
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
-                        <WrapPanel />
+                        <VirtualizingStackPanel />
                     </ItemsPanelTemplate>
                 </ItemsControl.ItemsPanel>
-                <ItemsControl.ItemTemplate>
+                <ListView.ItemTemplate>
                     <DataTemplate>
-                        <materialDesign:Card Width="200" Margin="5">
-                            <Grid>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="140" />
-                                    <RowDefinition Height="Auto" />
-                                </Grid.RowDefinitions>
-                                <Image Source="{Binding RenderedThumb}" Width="196" Height="140" Stretch="UniformToFill" />
-                                <Button Grid.Row="0" 
+                        <materialDesign:Card HorizontalAlignment="Stretch" Margin="2,0,2,0">
+                            <Grid HorizontalAlignment="Stretch">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <Image Source="{Binding RenderedThumb}" Width="60" Stretch="UniformToFill" Margin="5" />
+                                <StackPanel Grid.Column="1" Margin="8 8 8 8" VerticalAlignment="Center" >
+                                    <TextBlock VerticalAlignment="Center" FontWeight="Bold" TextWrapping="WrapWithOverflow" TextTrimming="CharacterEllipsis" Text="{Binding Name}" ToolTip="{Binding Name}"/>
+                                </StackPanel>
+                            </Grid>
+                        </materialDesign:Card>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+            <GridSplitter Grid.Column="1" HorizontalAlignment="Left"  Margin="0,50,0,50" VerticalAlignment="Stretch" Width="5"/>
+            <materialDesign:Card Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="8,4,4,4">
+                <Grid HorizontalAlignment="Center">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <Image Source="{Binding FotoSelecionada.Image}" Margin="5" Stretch="Uniform" />
+                    <!--<Button Grid.Row="0" 
                                             Style="{StaticResource MaterialDesignFloatingActionMiniAccentButton}" 
                                             HorizontalAlignment="Right" 
                                             VerticalAlignment="Bottom" 
@@ -64,17 +89,74 @@
                                             Command="{Binding Path=DataContext.ExecutaCommando, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:MainWindow}}}"
                                             CommandParameter="{Binding}">
 
-                                    <materialDesign:PackIcon Kind="Pencil" />
+                        <materialDesign:PackIcon Kind="ContentSave" />
+                    </Button>-->
+                    <StackPanel Grid.Row="1" Margin="5" >
+                        <TextBox Text="{Binding FotoSelecionada.Name}" Margin="5" materialDesign:HintAssist.Hint="Nome" Style="{StaticResource MaterialDesignFloatingHintTextBox}"/>
+                        <StackPanel Margin="5">
+                            <CheckBox x:Name="cbWatermark" IsChecked="{Binding FotoSelecionada.UseWaterMark}">Usar Marca de Água</CheckBox>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBox Text="{Binding FotoSelecionada.WaterMark}" FontFamily="{Binding FotoSelecionada.WaterMarkFont}" IsEnabled="{Binding FotoSelecionada.UseWaterMark}" materialDesign:HintAssist.Hint="Marca de água" Style="{StaticResource MaterialDesignFloatingHintTextBox}"/>
+                                <Button Grid.Column="1" 
+                                            HorizontalAlignment="Right" 
+                                            VerticalAlignment="Bottom" 
+                                            Margin="0"
+                                            Command="{Binding Path=DataContext.SelecionarFont, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:MainWindow}}}"
+                                            CommandParameter="{Binding}">
+                                    <StackPanel Orientation="Horizontal">
+                                        <materialDesign:PackIcon Kind="Palette" Foreground="{Binding FotoSelecionada.WaterMarkColor}" />
+                                        
+                                    </StackPanel>
+                                    
                                 </Button>
-                                <StackPanel Grid.Row="1" Margin="8 24 8 8" >
-                                    <TextBlock VerticalAlignment="Center" FontWeight="Bold" TextTrimming="CharacterEllipsis" Text="{Binding Name}" ToolTip="{Binding Name}"/>
-                                </StackPanel>
                             </Grid>
-                        </materialDesign:Card>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
-        </ScrollViewer>
+                            
+                        </StackPanel>
+                    </StackPanel>
+                </Grid>
+            </materialDesign:Card>
+            
+            <!--<ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Auto">
+                <ItemsControl x:Name="icDados" ItemsSource="{Binding Fotos}" Margin="5">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <materialDesign:Card Width="200" Margin="5">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="140" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+                                    <Image Source="{Binding RenderedThumb}" Width="196" Height="140" Stretch="UniformToFill" />
+                                    <Button Grid.Row="0" 
+                                            Style="{StaticResource MaterialDesignFloatingActionMiniAccentButton}" 
+                                            HorizontalAlignment="Right" 
+                                            VerticalAlignment="Bottom" 
+                                            Margin="0 0 16 -20"
+                                            Command="{Binding Path=DataContext.ExecutaCommando, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:MainWindow}}}"
+                                            CommandParameter="{Binding}">
+
+                                        <materialDesign:PackIcon Kind="Pencil" />
+                                    </Button>
+                                    <StackPanel Grid.Row="1" Margin="8 24 8 8" >
+                                        <TextBlock VerticalAlignment="Center" FontWeight="Bold" TextTrimming="CharacterEllipsis" Text="{Binding Name}" ToolTip="{Binding Name}"/>
+                                    </StackPanel>
+                                </Grid>
+                            </materialDesign:Card>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>-->
+        </Grid>
+
 
         <materialDesign:Card Visibility="{Binding ShowProgress}" UniformCornerRadius="50" Padding="0" Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center">
             <ProgressBar Margin="15" Style="{StaticResource MaterialDesignCircularProgressBar}" 

@@ -101,7 +101,64 @@ namespace FotosDaPiteca.Models
                 {
                     _WaterMark = value;
                     RaisePropertyChanged("WaterMark");
-                    RenderImage();
+                    if (UseWaterMark)
+                    {
+                        RenderImage();
+                    }
+                }
+            }
+        }
+
+        string _WaterMarkFont = "Segoe UI";
+        public string WaterMarkFont
+        {
+            get { return _WaterMarkFont; }
+            set
+            {
+                if (_WaterMarkFont != value)
+                {
+                    _WaterMarkFont = value;
+                    RaisePropertyChanged("WaterMarkFont");
+                    if (UseWaterMark)
+                    {
+                        RenderImage();
+                    }
+                }
+            }
+        }
+
+        string _WaterMarkColor = "#FF000000";
+        public string WaterMarkColor
+        {
+            get { return _WaterMarkColor; }
+            set
+            {
+                if (_WaterMarkColor != value)
+                {
+                    _WaterMarkColor = value;
+                    RaisePropertyChanged("WaterMarkColor");
+                    if (UseWaterMark)
+                    {
+                        RenderImage();
+                    }
+                }
+            }
+        }
+
+        string _WaterMarkPosition = "Center";
+        public string WaterMarkPosition
+        {
+            get { return _WaterMarkPosition; }
+            set
+            {
+                if (_WaterMarkPosition != value)
+                {
+                    _WaterMarkPosition = value;
+                    RaisePropertyChanged("WaterMarkPosition");
+                    if (UseWaterMark)
+                    {
+                        RenderImage();
+                    }
                 }
             }
         }
@@ -126,7 +183,7 @@ namespace FotosDaPiteca.Models
             if (Image != null)
             {
                 
-                RenderedImage = PhotoHelper.RenderFinal(Image, false, "", "", "", "");
+                RenderedImage = PhotoHelper.RenderFinal(Image, UseWaterMark, WaterMark, WaterMarkPosition, WaterMarkColor, WaterMarkFont);
                 RenderedThumb = PhotoHelper.RenderThumb(RenderedImage, 196, 140);
             }
             

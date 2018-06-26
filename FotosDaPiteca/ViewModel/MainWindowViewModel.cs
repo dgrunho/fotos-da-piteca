@@ -13,6 +13,9 @@ using MaterialDesignThemes.Wpf;
 using FotosDaPiteca.Helpers;
 using Microsoft.Win32;
 using System.IO;
+using WpfColorFontDialog;
+using ColorPickerWPF;
+using System.Windows.Media;
 
 namespace FotosDaPiteca.ViewModel
 {
@@ -114,37 +117,68 @@ namespace FotosDaPiteca.ViewModel
         {
             if (!DesignerProperties.GetIsInDesignMode(new DependencyObject()))
             {
-                //load();
+                List<FileInfo> files = new List<FileInfo>();
+                files.Add(new FileInfo("C:\\Users\\0101410\\Desktop\\Photos\\1 (1).jpg"));
+                files.Add(new FileInfo("C:\\Users\\0101410\\Desktop\\Photos\\1 (2).jpg"));
+                files.Add(new FileInfo("C:\\Users\\0101410\\Desktop\\Photos\\1 (3).jpg"));
+                files.Add(new FileInfo("C:\\Users\\0101410\\Desktop\\Photos\\1 (4).jpg"));
+                files.Add(new FileInfo("C:\\Users\\0101410\\Desktop\\Photos\\1 (5).jpg"));
+                load(files);
+                FotoSelecionada = new Photo(files[0]);
             }
             else
             {
-                //Pessoas = new ObservableCollection<Pessoa>
-                //{
-                //    new Pessoa { ID = 1, Nome = "Teste", ContactosAbreviados = "EML: eml@eml.com" }
-                //};
+                List<FileInfo> files = new List<FileInfo>();
+                files.Add(new FileInfo("C:\\Users\\0101410\\Desktop\\Photos\\1 (1).jpg"));
+                files.Add(new FileInfo("C:\\Users\\0101410\\Desktop\\Photos\\1 (2).jpg"));
+                files.Add(new FileInfo("C:\\Users\\0101410\\Desktop\\Photos\\1 (3).jpg"));
+                files.Add(new FileInfo("C:\\Users\\0101410\\Desktop\\Photos\\1 (4).jpg"));
+                files.Add(new FileInfo("C:\\Users\\0101410\\Desktop\\Photos\\1 (5).jpg"));
+                load(files);
+                FotoSelecionada = new Photo(files[0]);
             }
         }
 
         #endregion
 
         #region "Commands"
-        public RelayCommand ExecutaCommando => new RelayCommand(ExecuteRunDialog);
-
-        private async void ExecuteRunDialog(object o)
+        public RelayCommand SelecionarFont => new RelayCommand(delegate(object o)
         {
-            
-            //PessoaSelecionada = (Pessoa)o;
-            //var view = new PessoaEditor
+
+            Color color;
+
+            if (ColorPickerWindow.ShowDialog(out color) == true)
+            {
+                FotoSelecionada.WaterMarkColor = new ColorConverter().ConvertToString(color);
+            }
+
+            ////We can pass a bool to choose if we preview the font directly in the list of fonts.
+            //bool previewFontInFontList = true;
+            ////True to allow user to input arbitrary font sizes. False to only allow predtermined sizes
+            //bool allowArbitraryFontSizes = true;
+
+
+            //ColorFontDialog dialog = new ColorFontDialog(previewFontInFontList, allowArbitraryFontSizes);
+            //if (FotoSelecionada.WaterMarkFont == null)
             //{
-            //    DataContext = new PessoaEditorViewModel() { PessoaSelecionada = PessoaSelecionada}
-            //};
+            //    FotoSelecionada.WaterMarkFont = "Segoe UI";
+            //}
+            //FontInfo fi = new FontInfo(new System.Windows.Media.FontFamily(FotoSelecionada.WaterMarkFont), 18, FontStyles.Normal, FontStretches.Normal, FontWeights.Normal, System.Windows.Media.Brushes.Black);
+            //dialog.Font = fi;
 
-            ////show the dialog
-            //var result = await DialogHost.Show(view, "RootDialog", ClosingEventHandler);
+            ////Optional custom allowed size range
+            //dialog.FontSizes = new int[] { 10, 12, 14, 16, 18, 20, 22 };
 
-            ////check the result...
-            //Console.WriteLine("Dialog was closed, the CommandParameter used to close it was: " + (result ?? "NULL"));
-        }
+            //if (dialog.ShowDialog() == true)
+            //{
+            //    FontInfo font = dialog.Font;
+            //    if (font != null)
+            //    {
+            //        FotoSelecionada.WaterMarkFont = font.Family.ToString();
+            //        //FontInfo.ApplyFont(MyTextBox, font);
+            //    }
+            //}
+        });
 
 
         public RelayCommand cmdNewProject => new RelayCommand(ExecuteNewProject);
@@ -184,20 +218,15 @@ namespace FotosDaPiteca.ViewModel
             ShowProgress = Visibility.Visible;
             await Task.Factory.StartNew(() =>
             {
-                ObservableCollection<Photo> _fotos = new ObservableCollection<Photo>();
                 foreach (FileInfo fs in files)
                 {
-                    //_fotos.Add(new Photo(fs));
+                    Console.WriteLine(fs.FullName);
                     Photo Foto = new Photo(fs);
                     App.Current.Dispatcher.Invoke((Action)delegate
                     {
                         Fotos.Add(Foto);
                     });
                 }
-                //App.Current.Dispatcher.Invoke((Action)delegate
-                //{
-                //    Fotos = _fotos;
-                //});
             });
             IsLoading = false;
             ShowProgress = Visibility.Collapsed;

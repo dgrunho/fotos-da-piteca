@@ -1,15 +1,86 @@
-﻿<Window x:Class="FotosDaPiteca.MainWindow"
+﻿<Controls:MetroWindow x:Class="FotosDaPiteca.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         xmlns:local="clr-namespace:FotosDaPiteca"
+        xmlns:vm="clr-namespace:FotosDaPiteca.ViewModel" 
+        xmlns:helpers="clr-namespace:FotosDaPiteca.Helpers"              
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="{Binding Titulo}" Height="450" Width="800"
+        TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+        TextElement.FontWeight="Regular"
+        TextElement.FontSize="13"
+        TextOptions.TextFormattingMode="Ideal" 
+        TextOptions.TextRenderingMode="Auto"
+        Background="{DynamicResource MaterialDesignPaper}"
+        FontFamily="{StaticResource MaterialDesignFont}"
+        WindowState="Maximized"
+        DataContext="{DynamicResource MainWindowViewModel}">
+    <Window.Resources>
+        <vm:MainWindowViewModel x:Key="MainWindowViewModel"/>
+    </Window.Resources>
     <Grid>
-        <Grid>
-            <!--tes<te-->
-            <Button/>
-        </Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <materialDesign:ColorZone Padding="16" materialDesign:ShadowAssist.ShadowDepth="Depth2"
+                                            Mode="PrimaryMid" DockPanel.Dock="Top">
+            <DockPanel>
+                <materialDesign:PopupBox DockPanel.Dock="Right" PlacementMode="BottomAndAlignRightEdges" StaysOpen="False">
+                    <StackPanel>
+                        <Button Content="Novo Projeto" Command="{Binding cmdNewProject}" />
+                        <Separator/>
+                        <Button Content="Sair" Click="SairButton_Click" />
+                    </StackPanel>
+                </materialDesign:PopupBox>
+                <TextBlock HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="22">Teste</TextBlock>
+            </DockPanel>
+        </materialDesign:ColorZone>
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+            <ItemsControl x:Name="icDados" ItemsSource="{Binding Fotos}" Margin="5">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <materialDesign:Card Width="200" Margin="5">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="140" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+                                <Image Source="{Binding RenderedThumb}" Width="196" Height="140" Stretch="UniformToFill" />
+                                <Button Grid.Row="0" 
+                                            Style="{StaticResource MaterialDesignFloatingActionMiniAccentButton}" 
+                                            HorizontalAlignment="Right" 
+                                            VerticalAlignment="Bottom" 
+                                            Margin="0 0 16 -20"
+                                            Command="{Binding Path=DataContext.ExecutaCommando, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:MainWindow}}}"
+                                            CommandParameter="{Binding}">
+
+                                    <materialDesign:PackIcon Kind="Pencil" />
+                                </Button>
+                                <StackPanel Grid.Row="1" Margin="8 24 8 8" >
+                                    <TextBlock VerticalAlignment="Center" FontWeight="Bold" TextTrimming="CharacterEllipsis" Text="{Binding Name}" ToolTip="{Binding Name}"/>
+                                </StackPanel>
+                            </Grid>
+                        </materialDesign:Card>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+
+        <materialDesign:Card Visibility="{Binding ShowProgress}" UniformCornerRadius="50" Padding="0" Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center">
+            <ProgressBar Margin="15" Style="{StaticResource MaterialDesignCircularProgressBar}" 
+                                 Value="50"
+                                 IsIndeterminate="{Binding IsLoading}"
+                             Width="50" Height="50"/>
+        </materialDesign:Card>
     </Grid>
-</Window>
+</Controls:MetroWindow>

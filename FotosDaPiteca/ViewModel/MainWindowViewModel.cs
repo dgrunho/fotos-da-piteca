@@ -17,6 +17,7 @@ using WpfColorFontDialog;
 using ColorPickerWPF;
 using System.Windows.Media;
 using System.Drawing.Text;
+using Microsoft.WindowsAPICodePack.Dialogs;
 
 namespace FotosDaPiteca.ViewModel
 {
@@ -210,6 +211,20 @@ namespace FotosDaPiteca.ViewModel
             //}
         });
 
+        public RelayCommand AplicarTodos => new RelayCommand(delegate (object o)
+        {
+
+            foreach (Photo p in Fotos)
+            {
+                p.WaterMark = FotoSelecionada.WaterMark;
+                p.WaterMarkFont = FotoSelecionada.WaterMarkFont;
+                p.WaterMarkFontSize = FotoSelecionada.WaterMarkFontSize;
+                p.WaterMarkPosition = FotoSelecionada.WaterMarkPosition;
+                p.WaterMarkColor = FotoSelecionada.WaterMarkColor;
+                p.UseWaterMark = FotoSelecionada.UseWaterMark;
+            }
+        });
+
 
         public RelayCommand cmdNewProject => new RelayCommand(ExecuteNewProject);
         private void ExecuteNewProject(object o)
@@ -229,6 +244,12 @@ namespace FotosDaPiteca.ViewModel
                 
         }
 
+        public RelayCommand cmdExport => new RelayCommand(delegate (object o)
+        {
+
+            Exportar();
+        });
+
         #endregion
 
         #region "Events"
@@ -241,6 +262,35 @@ namespace FotosDaPiteca.ViewModel
         #endregion
 
         #region "Methods"
+
+        async void Exportar()
+        {
+            var dialog = new CommonOpenFileDialog();
+            dialog.IsFolderPicker = true;
+            if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
+            {
+                String FolderName = dialog.FileName;
+                IsLoading = true;
+                ShowProgress = Visibility.Visible;
+                await Task.Factory.StartNew(() =>
+                {
+                    foreach (Photo P in Fotos)
+                    {
+                        if (P.Name.ToUpper().EndsWith(".JPG"))
+                        {
+                            P.RenderImage(FolderName + "\\" + P.Name);
+                        }
+                        else
+                        {
+                            P.RenderImage(FolderName + "\\" + P.Name + ".jpg");
+                        }
+
+                    }
+                });
+                IsLoading = false;
+                ShowProgress = Visibility.Collapsed;
+            }
+        }
 
         async void load(List<FileInfo> files)
         {

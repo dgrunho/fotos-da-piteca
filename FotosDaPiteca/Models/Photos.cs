@@ -11,15 +11,41 @@ using FotosDaPiteca.Classes;
 
 namespace FotosDaPiteca.Models
 {
+    public enum Posicoes
+    {
+        [Description("Superior Esquerda")]
+        SuperiorEsquerda = 1,
+        [Description("Superior Direita")]
+        SuperiorDireita = 2,
+        [Description("Centro")]
+        Centro = 3,
+        [Description("Inferior Esquerda")]
+        InferiorEsquerda = 4,
+        [Description("Inferior Direita")]
+        InferiorDireita = 5
+    }
+
     [Serializable()]
     public class Photo : INotifyPropertyChanged
     {
+        #region Enumeracoes
+
+
+
+        #endregion
+        #region Construtores
+
         public Photo(FileInfo FilePath)
         {
             Name = FilePath.Name;
             OriginalPath = FilePath.FullName;
             Image = File.ReadAllBytes(FilePath.FullName);
         }
+
+        #endregion
+
+        #region Propriedades
+
         string _Name;
         public string Name
         {
@@ -59,6 +85,38 @@ namespace FotosDaPiteca.Models
                     _Image = value;
                     RaisePropertyChanged("Image");
                     RenderImage();
+                    System.Drawing.SizeF s = PhotoHelper.GetImageSize(Image);
+                    ImageSize = new Size((int)s.Width, (int)s.Height);
+                }
+            }
+        }
+
+        Size _ImageSize = new Size(800, 600);
+        public Size ImageSize
+        {
+            get { return _ImageSize; }
+            set
+            {
+                if (_ImageSize != value)
+                {
+                    _ImageSize = value;
+                    RaisePropertyChanged("ImageSize");
+                }
+            }
+        }
+
+
+        Size _RenderedImageSize = new Size(800, 600);
+        public Size RenderedImageSize
+        {
+            get { return _RenderedImageSize; }
+            set
+            {
+                if (_RenderedImageSize != value)
+                {
+                    _RenderedImageSize = value;
+                    RaisePropertyChanged("RenderedImageSize");
+                    RenderImage();
                 }
             }
         }
@@ -77,6 +135,21 @@ namespace FotosDaPiteca.Models
             }
         }
 
+
+        Size _RenderedThumbSize = new Size(196, 140);
+        public Size RenderedThumbSize
+        {
+            get { return _RenderedThumbSize; }
+            set
+            {
+                if (_RenderedThumbSize != value)
+                {
+                    _RenderedThumbSize = value;
+                    RaisePropertyChanged("RenderedThumbSize");
+                    RenderImage();
+                }
+            }
+        }
         byte[] _RenderedThumb;
         public byte[] RenderedThumb
         {
@@ -90,6 +163,8 @@ namespace FotosDaPiteca.Models
                 }
             }
         }
+
+
 
         string _WaterMark;
         public string WaterMark
@@ -163,8 +238,8 @@ namespace FotosDaPiteca.Models
             }
         }
 
-        string _WaterMarkPosition = "Center";
-        public string WaterMarkPosition
+        Posicoes _WaterMarkPosition = Posicoes.Centro;
+        public Posicoes WaterMarkPosition
         {
             get { return _WaterMarkPosition; }
             set
@@ -234,10 +309,14 @@ namespace FotosDaPiteca.Models
                 {
                     _ShowProgress = value;
                     RaisePropertyChanged("ShowProgress");
-                    
+
                 }
             }
         }
+
+        #endregion
+
+        #region Metodos e Eventos
 
         async void RenderImage()
         {
@@ -246,12 +325,18 @@ namespace FotosDaPiteca.Models
                 IsLoading = true;
                 await Task.Factory.StartNew(() =>
                 {
-                    RenderedImage = PhotoHelper.RenderFinal(Image, UseWaterMark, WaterMark, WaterMarkPosition, WaterMarkColor, WaterMarkFont, WaterMarkFontSize);
-                    RenderedThumb = PhotoHelper.RenderThumb(RenderedImage, 196, 140);
+                    RenderedImage = PhotoHelper.RenderFinal(Image, RenderedImageSize.ToDrawingSize(), UseWaterMark, WaterMark, (int)WaterMarkPosition, WaterMarkColor, WaterMarkFont, WaterMarkFontSize);
+                    RenderedThumb = PhotoHelper.RenderThumb(RenderedImage, RenderedThumbSize.ToDrawingSize());
                 });
                 IsLoading = false;
             }
-            
+
+        }
+
+        public void RenderImage(string FilePath)
+        {
+
+            File.WriteAllBytes(FilePath, PhotoHelper.RenderFinal(Image, ImageSize.ToDrawingSize(), UseWaterMark, WaterMark, (int)WaterMarkPosition, WaterMarkColor, WaterMarkFont, WaterMarkFontSize));
         }
 
         void RaisePropertyChanged(string prop)
@@ -259,6 +344,68 @@ namespace FotosDaPiteca.Models
             if (PropertyChanged != null) { PropertyChanged(this, new PropertyChangedEventArgs(prop)); }
         }
         public event PropertyChangedEventHandler PropertyChanged;
+
+        #endregion
+
+
     }
 
+    public class Size : INotifyPropertyChanged
+    {
+        #region Construtores
+        public Size(int width, int height)
+        {
+            Width = width;
+            Height = height;
+        }
+
+        #endregion
+
+        #region Propriedades
+
+        int _Width;
+        public int Width
+        {
+            get { return _Width; }
+            set
+            {
+                if (_Width != value)
+                {
+                    _Width = value;
+                    RaisePropertyChanged("Width");
+                }
+            }
+        }
+
+        int _Height;
+        public int Height
+        {
+            get { return _Height; }
+            set
+            {
+                if (_Height != value)
+                {
+                    _Height = value;
+                    RaisePropertyChanged("Height");
+                }
+            }
+        }
+
+        #endregion
+
+        #region Metodos e Eventos
+
+        public System.Drawing.Size ToDrawingSize()
+        {
+            return new System.Drawing.Size(Width, Height);
+        }
+
+        void RaisePropertyChanged(string prop)
+        {
+            if (PropertyChanged != null) { PropertyChanged(this, new PropertyChangedEventArgs(prop)); }
+        }
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        #endregion
+    }
 }

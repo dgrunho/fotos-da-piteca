@@ -23,12 +23,6 @@ namespace FotosDaPiteca
         public MainWindow()
         {
             InitializeComponent();
-            
-
-            
-
-            
-
         }
 
         private void SairButton_Click(object sender, RoutedEventArgs e)

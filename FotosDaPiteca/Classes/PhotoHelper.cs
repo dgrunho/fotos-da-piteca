@@ -25,28 +25,35 @@ namespace FotosDaPiteca.Classes
             }
         }
 
-        public static byte[] RenderFinal(byte[] Original, Size Tamanho, bool UseWatermark, string Watermark, int WatermarkPosition, string WatermarkColor, string WatermarkFont, int WatermarkFontSize)
+        public static byte[] RenderFinal(byte[] Original, SizeF Tamanho, bool UseWatermark, string Watermark, int WatermarkPosition, string WatermarkColor, string WatermarkFont, int WatermarkFontSize)
         {
             using (MemoryStream ms = new MemoryStream(Original))
             {
                 using (Bitmap bm = new Bitmap(ms))
                 {
-                    using (Bitmap bmFinal = new Bitmap(Tamanho.Width, Tamanho.Height))
+                    if (Tamanho.Width == 0) Tamanho.Width = 1;
+                    if (Tamanho.Height == 0) Tamanho.Height = 1;
+
+                    float ZoomFactor = Math.Min(Tamanho.Width / bm.Width, Tamanho.Height / bm.Height);
+
+                    SizeF ZoomedSize = new SizeF(bm.Width * ZoomFactor, bm.Height * ZoomFactor);
+
+
+
+                    using (Bitmap bmFinal = new Bitmap((int)ZoomedSize.Width, (int)ZoomedSize.Height))
                     {
                         using (Graphics gr = Graphics.FromImage(bmFinal))
                         {
                             gr.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
                             gr.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.HighQuality;
-                            gr.DrawImage(bm, 0, 0, Tamanho.Width, Tamanho.Height);
+                            gr.DrawImage(bm, 0, 0, ZoomedSize.Width, ZoomedSize.Height);
                             if (UseWatermark)
                             {
                                 int RenderFontSize = WatermarkFontSize;
-                                RenderFontSize = Convert.ToInt32((Convert.ToDouble(WatermarkFontSize) / Convert.ToDouble(bm.Height)) * Convert.ToDouble(Tamanho.Height));
+                                RenderFontSize = Convert.ToInt32((Convert.ToDouble(WatermarkFontSize) / Convert.ToDouble(bm.Height)) * Convert.ToDouble(ZoomedSize.Height));
                                 SizeF s = gr.MeasureString(Watermark, new Font(WatermarkFont, RenderFontSize));
 
                                 PointF Posicao = GetTextDrawPosition(WatermarkPosition, new SizeF(bmFinal.Size.Width, bmFinal.Size.Height), s);
-                                //float midW = (bmFinal.Width / 2) - (s.Width / 2);
-                                //float midH = (bmFinal.Height / 2) - (s.Height / 2);
                                 gr.DrawString(Watermark, new Font(WatermarkFont, RenderFontSize), new SolidBrush(System.Drawing.ColorTranslator.FromHtml(WatermarkColor)), Posicao);
                             }
 

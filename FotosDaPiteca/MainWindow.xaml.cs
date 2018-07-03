@@ -23,11 +23,34 @@ namespace FotosDaPiteca
         public MainWindow()
         {
             InitializeComponent();
+            
+
+            
+
+            
+
         }
 
         private void SairButton_Click(object sender, RoutedEventArgs e)
         {
             Environment.Exit(1);
+        }
+
+        private void ImgBig_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            
+        }
+
+        private void MetroWindow_Loaded(object sender, RoutedEventArgs e)
+        {
+            //Tenho de medir o scaling do windows senão as contas da imagem ficam mal
+            ViewModel.MainWindowViewModel vm = (ViewModel.MainWindowViewModel)DataContext;
+            PresentationSource source = PresentationSource.FromVisual(this);
+            if (source != null)
+            {
+                vm.ScaleX = source.CompositionTarget.TransformToDevice.M11;
+                vm.ScaleY = source.CompositionTarget.TransformToDevice.M22;
+            }
         }
     }
 }

@@ -45,17 +45,36 @@ namespace FotosDaPiteca.ViewModel
 
         public ViewModelBase()
         {
-            load();
+
         }
 
-        async void load()
+
+        double _ScaleX = 1;
+        public double ScaleX
         {
-            await Task.Factory.StartNew(() =>
-                        {
-                            //TiposContato = SQL.getTiposContacto();
-                        });
+            get { return _ScaleX; }
+            set
+            {
+                if (_ScaleX != value)
+                {
+                    _ScaleX = value;
+                    RaisePropertyChanged("ScaleX");
+                }
+            }
+        }
+        double _ScaleY = 1;
+        public double ScaleY
+        {
+            get { return _ScaleY; }
+            set
+            {
+                if (_ScaleY != value)
+                {
+                    _ScaleY = value;
+                    RaisePropertyChanged("ScaleY");
+                }
+            }
         }
 
-        
     }
 }

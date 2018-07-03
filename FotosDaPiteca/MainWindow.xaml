@@ -12,7 +12,7 @@
         xmlns:Fotos="clr-namespace:FotosDaPiteca.Models"  
         xmlns:System="clr-namespace:System;assembly=mscorlib"
         mc:Ignorable="d"
-        Title="{Binding Titulo}" Height="450" Width="800"
+        Title="{Binding Titulo}" Height="600" Width="800"
         TextElement.Foreground="{DynamicResource MaterialDesignBody}"
         TextElement.FontWeight="Regular"
         TextElement.FontSize="13"
@@ -21,7 +21,8 @@
         Background="{DynamicResource MaterialDesignPaper}"
         FontFamily="{StaticResource MaterialDesignFont}"
         WindowState="Maximized"
-        DataContext="{DynamicResource MainWindowViewModel}">
+        DataContext="{DynamicResource MainWindowViewModel}"
+                      Loaded="MetroWindow_Loaded">
     <Window.Resources>
         <vm:MainWindowViewModel x:Key="MainWindowViewModel"/>
         <Converter:BooleanToVisibleConverter x:Key="BoolToVisConverter" Collapse="True"/>
@@ -177,23 +178,37 @@
             
             <GridSplitter Grid.Column="1" HorizontalAlignment="Left"  Margin="6,50,0,50" VerticalAlignment="Stretch" Width="5"/>
             <materialDesign:Card Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="8,4,4,4">
-                <Grid HorizontalAlignment="Center">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="*" />
-                        <RowDefinition Height="Auto" />
-                    </Grid.RowDefinitions>
-                    <Grid Grid.Row="0">
-                        <Image Source="{Binding FotoSelecionada.RenderedImage}" Margin="5" Stretch="Uniform" />
+                <Grid x:Name="grdBackGround" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                    <helpers:DataPiping.DataPipes>
+                        <helpers:DataPipeCollection>
+                            <helpers:DataPipe Source="{Binding Path=ActualWidth, ElementName=grdBackGround}"
+                         Target="{Binding Path=ImagemWidth, Mode=OneWayToSource}"/>
+                            <helpers:DataPipe Source="{Binding Path=ActualHeight, ElementName=grdBackGround}"
+                         Target="{Binding Path=ImagemHeight, Mode=OneWayToSource}"/>
+                        </helpers:DataPipeCollection>
+                    </helpers:DataPiping.DataPipes>
+
+                    <Grid HorizontalAlignment="Center">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <Image x:Name="ImgBig" Source="{Binding FotoSelecionada.RenderedImage}" Margin="5" Stretch="Uniform"/>
                         <ProgressBar Value="50"
                                  IsIndeterminate="{Binding FotoSelecionada.IsLoading}"
                                      VerticalAlignment="Bottom"
                              Height="5"
                                      Visibility="{Binding FotoSelecionada.ShowProgress}"/>
-                    </Grid>
-                    
-                    
 
+                        <StackPanel>
+                            <TextBlock Text="{Binding ImagemWidth}"/>
+                            <TextBlock Text="{Binding ImagemHeight}"/>
+                        </StackPanel>
+
+
+                    </Grid>
                 </Grid>
+                
             </materialDesign:Card>
             
             <!--<ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Auto">
@@ -234,7 +249,7 @@
         </Grid>
 
 
-        <materialDesign:Card Visibility="{Binding ShowProgress}" UniformCornerRadius="50" Padding="0" Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center">
+        <materialDesign:Card Visibility="{Binding IsLoading, Converter={StaticResource BoolToVisConverter}}" UniformCornerRadius="50" Padding="0" Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center">
             <ProgressBar Margin="15" Style="{StaticResource MaterialDesignCircularProgressBar}" 
                                  Value="50"
                                  IsIndeterminate="{Binding IsLoading}"

@@ -35,6 +35,11 @@ namespace FotosDaPiteca.Models
         #endregion
         #region Construtores
 
+        public Photo()
+        {
+
+        }
+
         public Photo(FileInfo FilePath)
         {
             Name = FilePath.Name;

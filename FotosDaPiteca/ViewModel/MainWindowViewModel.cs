@@ -88,7 +88,7 @@ namespace FotosDaPiteca.ViewModel
 
         }
 
-        Photo _FotoSelecionada ;
+        Photo _FotoSelecionada = new Photo() ;
         public Photo FotoSelecionada
         {
             get
@@ -101,6 +101,7 @@ namespace FotosDaPiteca.ViewModel
                 {
                     _FotoSelecionada = value;
                     RaisePropertyChanged("FotoSelecionada");
+                    FotoSelecionada.RenderedImageSize = new Models.Size((int)ImagemWidth, (int)ImagemHeight);
                 }
             }
         }
@@ -122,22 +123,57 @@ namespace FotosDaPiteca.ViewModel
             }
         }
 
-        Visibility _ShowProgress = Visibility.Collapsed;
-        public Visibility ShowProgress
+        bool _IsExporting = false;
+        public bool IsExporting
         {
             get
             {
-                return _ShowProgress;
+                return _IsExporting;
             }
             set
             {
-                if (_ShowProgress != value)
+                if (_IsExporting != value)
                 {
-                    _ShowProgress = value;
-                    RaisePropertyChanged("ShowProgress");
+                    _IsExporting = value;
+                    RaisePropertyChanged("IsExporting");
                 }
             }
         }
+
+        double _ImagemWidth;
+        public double ImagemWidth
+        {
+            get
+            {
+                return _ImagemWidth;
+            }
+            set
+            {
+                if (_ImagemWidth != value * ScaleX)
+                {
+                    _ImagemWidth = value * ScaleX;
+                   RaisePropertyChanged("ImagemWidth");
+                   FotoSelecionada.RenderedImageSize = new Models.Size((int)_ImagemWidth, (int)ImagemHeight);
+                }
+            }
+        }
+        double _ImagemHeight;
+        public double ImagemHeight
+        {
+            get
+            {
+                return _ImagemHeight;
+            }
+            set
+            {
+                if (_ImagemHeight != value * ScaleY)
+                {
+                    _ImagemHeight = value * ScaleY;
+                    RaisePropertyChanged("ImagemHeight");
+                }
+            }
+        }
+
 
         #endregion
 
@@ -246,7 +282,6 @@ namespace FotosDaPiteca.ViewModel
 
         public RelayCommand cmdExport => new RelayCommand(delegate (object o)
         {
-
             Exportar();
         });
 
@@ -270,8 +305,7 @@ namespace FotosDaPiteca.ViewModel
             if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
             {
                 String FolderName = dialog.FileName;
-                IsLoading = true;
-                ShowProgress = Visibility.Visible;
+                IsExporting = true;
                 await Task.Factory.StartNew(() =>
                 {
                     foreach (Photo P in Fotos)
@@ -287,15 +321,13 @@ namespace FotosDaPiteca.ViewModel
 
                     }
                 });
-                IsLoading = false;
-                ShowProgress = Visibility.Collapsed;
+                IsExporting = false;
             }
         }
 
         async void load(List<FileInfo> files)
         {
             IsLoading = true;
-            ShowProgress = Visibility.Visible;
             await Task.Factory.StartNew(() =>
             {
                 foreach (FileInfo fs in files)
@@ -309,7 +341,6 @@ namespace FotosDaPiteca.ViewModel
                 }
             });
             IsLoading = false;
-            ShowProgress = Visibility.Collapsed;
         }
 
         async void loadTiposLetra()

@@ -18,6 +18,8 @@ using ColorPickerWPF;
 using System.Windows.Media;
 using System.Drawing.Text;
 using Microsoft.WindowsAPICodePack.Dialogs;
+using System.Xml.Serialization;
+using System.Xml;
 
 namespace FotosDaPiteca.ViewModel
 {
@@ -56,6 +58,17 @@ namespace FotosDaPiteca.ViewModel
                 {
                     _Fotos = value;
                     RaisePropertyChanged("Fotos");
+                    if (_Fotos == null)
+                    {
+                        IsTrueOnNew = true;
+                        IsFalseOnNew = false;
+                    }
+                    else
+                    {
+                        IsTrueOnNew = false;
+                        IsFalseOnNew = true;
+                    }
+
                 }
             }
         }
@@ -88,7 +101,7 @@ namespace FotosDaPiteca.ViewModel
 
         }
 
-        Photo _FotoSelecionada = new Photo() ;
+        Photo _FotoSelecionada = new Photo();
         public Photo FotoSelecionada
         {
             get
@@ -102,6 +115,40 @@ namespace FotosDaPiteca.ViewModel
                     _FotoSelecionada = value;
                     RaisePropertyChanged("FotoSelecionada");
                     FotoSelecionada.RenderedImageSize = new Models.Size((int)ImagemWidth, (int)ImagemHeight);
+                }
+            }
+        }
+
+        bool _IsTrueOnNew = true;
+        public bool IsTrueOnNew
+        {
+            get
+            {
+                return _IsTrueOnNew;
+            }
+            set
+            {
+                if (_IsTrueOnNew != value)
+                {
+                    _IsTrueOnNew = value;
+                    RaisePropertyChanged("IsTrueOnNew");
+                }
+            }
+        }
+
+        bool _IsFalseOnNew = false;
+        public bool IsFalseOnNew
+        {
+            get
+            {
+                return _IsFalseOnNew;
+            }
+            set
+            {
+                if (_IsFalseOnNew != value)
+                {
+                    _IsFalseOnNew = value;
+                    RaisePropertyChanged("IsFalseOnNew");
                 }
             }
         }
@@ -152,8 +199,8 @@ namespace FotosDaPiteca.ViewModel
                 if (_ImagemWidth != value * ScaleX)
                 {
                     _ImagemWidth = value * ScaleX;
-                   RaisePropertyChanged("ImagemWidth");
-                   FotoSelecionada.RenderedImageSize = new Models.Size((int)_ImagemWidth / 2, (int)ImagemHeight / 2);
+                    RaisePropertyChanged("ImagemWidth");
+                    FotoSelecionada.RenderedImageSize = new Models.Size((int)_ImagemWidth / 2, (int)ImagemHeight / 2);
                 }
             }
         }
@@ -201,32 +248,26 @@ namespace FotosDaPiteca.ViewModel
             loadTiposLetra();
             if (!DesignerProperties.GetIsInDesignMode(new DependencyObject()))
             {
-                List<FileInfo> files = new List<FileInfo>();
-                files.Add(new FileInfo("C:\\Users\\0101410\\Desktop\\Photos\\1 (1).jpg"));
-                files.Add(new FileInfo("C:\\Users\\0101410\\Desktop\\Photos\\1 (2).jpg"));
-                files.Add(new FileInfo("C:\\Users\\0101410\\Desktop\\Photos\\1 (3).jpg"));
-                files.Add(new FileInfo("C:\\Users\\0101410\\Desktop\\Photos\\1 (4).jpg"));
-                files.Add(new FileInfo("C:\\Users\\0101410\\Desktop\\Photos\\1 (5).jpg"));
-                load(files);
-                //FotoSelecionada = new Photo(files[0]);
+                //Fotos = new ObservableCollection<Photo>();
+                //Fotos.Add(new Photo(new FileInfo("C:\\Users\\0101410\\Desktop\\Photos\\1 (1).jpg")));
+                //Fotos.Add(new Photo(new FileInfo("C:\\Users\\0101410\\Desktop\\Photos\\1 (2).jpg")));
+                //Fotos.Add(new Photo(new FileInfo("C:\\Users\\0101410\\Desktop\\Photos\\1 (3).jpg")));
+
             }
             else
             {
-                List<FileInfo> files = new List<FileInfo>();
-                files.Add(new FileInfo("C:\\Users\\0101410\\Desktop\\Photos\\1 (1).jpg"));
-                files.Add(new FileInfo("C:\\Users\\0101410\\Desktop\\Photos\\1 (2).jpg"));
-                files.Add(new FileInfo("C:\\Users\\0101410\\Desktop\\Photos\\1 (3).jpg"));
-                files.Add(new FileInfo("C:\\Users\\0101410\\Desktop\\Photos\\1 (4).jpg"));
-                files.Add(new FileInfo("C:\\Users\\0101410\\Desktop\\Photos\\1 (5).jpg"));
-                load(files);
-                //FotoSelecionada = new Photo(files[0]);
+                //Fotos = new ObservableCollection<Photo>();
+                //Fotos.Add(new Photo(new FileInfo("C:\\Users\\0101410\\Desktop\\Photos\\1 (1).jpg")));
+                //Fotos.Add(new Photo(new FileInfo("C:\\Users\\0101410\\Desktop\\Photos\\1 (2).jpg")));
+                //Fotos.Add(new Photo(new FileInfo("C:\\Users\\0101410\\Desktop\\Photos\\1 (3).jpg")));
+                
             }
         }
 
         #endregion
 
         #region "Commands"
-        public RelayCommand SelecionarFont => new RelayCommand(delegate(object o)
+        public RelayCommand SelecionarFont => new RelayCommand(delegate (object o)
         {
 
             Color color;
@@ -275,8 +316,9 @@ namespace FotosDaPiteca.ViewModel
                 p.WatermarkPosition = FotoSelecionada.WatermarkPosition;
                 p.WatermarkColor = FotoSelecionada.WatermarkColor;
                 p.UseWatermark = FotoSelecionada.UseWatermark;
+                p.AddShadow = FotoSelecionada.AddShadow;
             }
-            Task.Factory.StartNew(() => PropertiesMessageQueue.Enqueue("Dados memorizados"));
+            Task.Factory.StartNew(() => PropertiesMessageQueue.Enqueue("Marca de água aplicada a todas as fotos"));
         });
 
         public RelayCommand Memorizar => new RelayCommand(delegate (object o)
@@ -288,33 +330,47 @@ namespace FotosDaPiteca.ViewModel
             Properties.Settings.Default.WatermarkSize = FotoSelecionada.WatermarkFontSize;
             Properties.Settings.Default.WatermarkPosition = (int)FotoSelecionada.WatermarkPosition;
             Properties.Settings.Default.AddShadow = FotoSelecionada.AddShadow;
+            Properties.Settings.Default.WatermarkColor = FotoSelecionada.WatermarkColor;
             Properties.Settings.Default.Save();
             Task.Factory.StartNew(() => PropertiesMessageQueue.Enqueue("Dados memorizados"));
         });
 
 
-        public RelayCommand cmdNewProject => new RelayCommand(ExecuteNewProject);
-        private void ExecuteNewProject(object o)
+        public RelayCommand cmdNewProject => new RelayCommand(delegate (object o)
+        {
+            Fotos = new ObservableCollection<Photo>();
+            FotoSelecionada = new Photo();
+
+        });
+
+        public RelayCommand cmdAbrir => new RelayCommand(delegate (object o)
         {
             OpenFileDialog openFileDialog = new OpenFileDialog();
             openFileDialog.Multiselect = true;
-            openFileDialog.Filter = "Imagens|*.jpg;*.bmp;*.gif;*.png|Outros Ficheiros|*.*";
+            openFileDialog.Filter = "Projeto Fotos da Piteca|*.fdp;*.png|Outros Ficheiros|*.*";
             if (openFileDialog.ShowDialog() == true)
             {
-                List<FileInfo> files = new List<FileInfo>();
-                foreach (string file in openFileDialog.FileNames)
-                {
-                    files.Add(new FileInfo(file));
-                }
-                load(files);
+
             }
-                
-        }
+        });
+
+        public RelayCommand cmdGuardar => new RelayCommand(delegate (object o)
+        {
+            Guardar();
+        });
+
+
+        public RelayCommand cmdImportar => new RelayCommand(delegate (object o)
+        {
+            Importar();
+
+        });
 
         public RelayCommand cmdExport => new RelayCommand(delegate (object o)
         {
             Exportar();
         });
+
 
         #endregion
 
@@ -336,7 +392,7 @@ namespace FotosDaPiteca.ViewModel
             if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
             {
                 String FolderName = dialog.FileName;
-                IsExporting = true;
+                IsLoading = true;
                 await Task.Factory.StartNew(() =>
                 {
                     foreach (Photo P in Fotos)
@@ -352,26 +408,72 @@ namespace FotosDaPiteca.ViewModel
 
                     }
                 });
-                IsExporting = false;
+                IsLoading = false;
             }
         }
 
-        async void load(List<FileInfo> files)
+        async void Guardar()
         {
-            IsLoading = true;
-            await Task.Factory.StartNew(() =>
+            SaveFileDialog saveFileDialog = new SaveFileDialog();
+            saveFileDialog.Filter = "Projeto Fotos da Piteca|*.fdp;*.png|Outros Ficheiros|*.*";
+            if (saveFileDialog.ShowDialog() == true)
             {
-                foreach (FileInfo fs in files)
+                IsLoading = true;
+                await Task.Factory.StartNew(() =>
                 {
-                    Console.WriteLine(fs.FullName);
-                    Photo Foto = new Photo(fs);
-                    App.Current.Dispatcher.Invoke((Action)delegate
+                    XmlSerializer xsSubmit = new XmlSerializer(typeof(ObservableCollection<Photo>));
+                    var xml = "";
+
+                    using (var sww = new StringWriter())
                     {
-                        Fotos.Add(Foto);
-                    });
+                        using (XmlWriter writer = XmlWriter.Create(sww))
+                        {
+                            xsSubmit.Serialize(writer, Fotos);
+                            xml = sww.ToString();
+                        }
+                    }
+                    File.WriteAllText(saveFileDialog.FileName, xml);
+                });
+                IsLoading = false;
+            }
+        }
+
+        async void Importar()
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            openFileDialog.Multiselect = true;
+            openFileDialog.Filter = "Imagens|*.jpg;*.bmp;*.gif;*.png|Outros Ficheiros|*.*";
+            if (openFileDialog.ShowDialog() == true)
+            {
+                IsLoading = true;
+                List<FileInfo> files = new List<FileInfo>();
+                foreach (string file in openFileDialog.FileNames)
+                {
+                    files.Add(new FileInfo(file));
                 }
-            });
-            IsLoading = false;
+
+                await Task.Factory.StartNew(() =>
+                {
+                    ObservableCollection<Photo> FotosExport = new ObservableCollection<Photo>();
+                    foreach (FileInfo fs in files)
+                    {
+                        Console.WriteLine(fs.FullName);
+
+                        FotosExport.Add(new Photo(fs));
+                    }
+                    App.Current.Dispatcher.Invoke((Action)delegate
+                                    {
+                                        foreach (Photo P in FotosExport)
+                                        {
+                                            Fotos.Add(P);
+                                        }
+
+                                    });
+                });
+                IsLoading = false;
+            }
+
+
         }
 
         async void loadTiposLetra()
@@ -395,12 +497,5 @@ namespace FotosDaPiteca.ViewModel
         }
 
         #endregion
-
-
-
-
-
-
-
     }
 }

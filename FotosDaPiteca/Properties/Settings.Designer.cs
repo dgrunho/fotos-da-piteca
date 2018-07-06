@@ -94,5 +94,17 @@ namespace FotosDaPiteca.Properties {
                 this["UseWatermark"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("#FFFFFFFF")]
+        public string WatermarkColor {
+            get {
+                return ((string)(this["WatermarkColor"]));
+            }
+            set {
+                this["WatermarkColor"] = value;
+            }
+        }
     }
 }

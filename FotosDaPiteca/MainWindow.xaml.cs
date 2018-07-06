@@ -46,5 +46,21 @@ namespace FotosDaPiteca
                 vm.ScaleY = source.CompositionTarget.TransformToDevice.M22;
             }
         }
+
+        private void ApagarFotoButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (MessageBox.Show("Tem a certeza que deseja apagar a Foto","Apagar Foto",MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+            {
+                ViewModel.MainWindowViewModel vm = (ViewModel.MainWindowViewModel)DataContext;
+                Button btn = (Button)sender;
+                if (vm.FotoSelecionada == (FotosDaPiteca.Models.Photo)btn.DataContext)
+                {
+                    vm.FotoSelecionada = null;
+                }
+                vm.Fotos.Remove((FotosDaPiteca.Models.Photo)btn.DataContext);
+
+            }
+
+        }
     }
 }

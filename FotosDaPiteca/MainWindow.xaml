@@ -43,14 +43,71 @@
             <DockPanel>
                 <materialDesign:PopupBox DockPanel.Dock="Right" PlacementMode="BottomAndAlignRightEdges" StaysOpen="False">
                     <StackPanel>
-                        <Button Content="Novo Projeto" Command="{Binding cmdNewProject}" />
+                        <Button Command="{Binding cmdNewProject}">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="30"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <materialDesign:PackIcon Kind="File" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                <TextBlock Grid.Column="1" Text="Novo"/>
+                            </Grid>
+                        </Button>
+                        <Button Command="{Binding cmdAbrir}" >
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="30"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <materialDesign:PackIcon Kind="FolderOpen" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                <TextBlock Grid.Column="1" Text="Abrir"/>
+                            </Grid>
+                        </Button>
+                        <Button Command="{Binding cmdGuardar}" IsEnabled="{Binding IsFalseOnNew}">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="30"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <materialDesign:PackIcon Kind="ContentSave" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                <TextBlock Grid.Column="1" Text="Guardar"/>
+                            </Grid>
+                        </Button>
                         <Separator/>
-                        <Button Content="Exportar" Command="{Binding cmdExport}" />
+                        <Button Command="{Binding cmdImportar}"  IsEnabled="{Binding IsFalseOnNew}">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="30"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <materialDesign:PackIcon Kind="FileImport" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                <TextBlock Grid.Column="1" Text="Importar"/>
+                            </Grid>
+                        </Button>
+                        <Button Command="{Binding cmdExport}"  IsEnabled="{Binding IsFalseOnNew}">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="30"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <materialDesign:PackIcon Kind="FileExport" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                <TextBlock Grid.Column="1" Text="Exportar"/>
+                            </Grid>
+                        </Button>
                         <Separator/>
-                        <Button Content="Sair" Click="SairButton_Click" />
+                        <Button Click="SairButton_Click" >
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="30"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <materialDesign:PackIcon Kind="ExitToApp" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                <TextBlock Grid.Column="1" Text="Sair"/>
+                            </Grid>
+                        </Button>
                     </StackPanel>
                 </materialDesign:PopupBox>
-                <TextBlock HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="22">Teste</TextBlock>
+                <TextBlock HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="22">Fotos da Piteca</TextBlock>
             </DockPanel>
         </materialDesign:ColorZone>
         <Grid Grid.Row="1">
@@ -81,11 +138,19 @@
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="Auto" />
                                         <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
                                     </Grid.ColumnDefinitions>
                                     <Image Source="{Binding RenderedThumb}" Width="60" Stretch="UniformToFill" Margin="5" />
                                     <StackPanel Grid.Column="1" Margin="8 8 8 8" VerticalAlignment="Center" >
                                         <TextBlock VerticalAlignment="Center" FontWeight="Bold" TextWrapping="WrapWithOverflow" TextTrimming="CharacterEllipsis" Text="{Binding Name}" ToolTip="{Binding Name}"/>
                                     </StackPanel>
+                                    <Button Click="ApagarFotoButton_Click"
+                                            Margin="0,0,0,0"
+                                            Style="{StaticResource MaterialDesignFlatButton}"
+                                            Grid.Column="2"
+                                            Padding="5">
+                                        <materialDesign:PackIcon Kind="Delete" Height="24" Width="24" Foreground="White" />
+                                    </Button>
                                 </Grid>
                             </materialDesign:Card>
                         </DataTemplate>
@@ -188,8 +253,7 @@
                                 <Button Content="Aplicar a Todos" Command="{Binding Path=DataContext.AplicarTodos, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:MainWindow}}}" Margin="0,0,0,0"/>
                             </StackPanel>
                         </StackPanel>
-                        <materialDesign:Snackbar MessageQueue="{Binding PropertiesMessageQueue}"
-                                                 x:Name="snPropriedades" />
+                        
                     </Grid>
                     
                 </materialDesign:Card>
@@ -274,5 +338,8 @@
                                  IsIndeterminate="{Binding IsLoading}"
                              Width="50" Height="50"/>
         </materialDesign:Card>
+
+        <materialDesign:Snackbar MessageQueue="{Binding PropertiesMessageQueue}"
+                                                 x:Name="snPropriedades" />
     </Grid>
 </Controls:MetroWindow>

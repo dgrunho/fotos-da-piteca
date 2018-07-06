@@ -43,6 +43,7 @@ namespace FotosDaPiteca.Models
                 Watermark = Properties.Settings.Default.Watermark;
                 WatermarkFont = Properties.Settings.Default.WatermarkFont;
                 WatermarkFontSize = Properties.Settings.Default.WatermarkSize;
+                WatermarkColor = Properties.Settings.Default.WatermarkColor;
                 WatermarkPosition = (Posicoes)Properties.Settings.Default.WatermarkPosition;
                 AddShadow = Properties.Settings.Default.AddShadow;
             }
@@ -61,6 +62,7 @@ namespace FotosDaPiteca.Models
                 Watermark = Properties.Settings.Default.Watermark;
                 WatermarkFont = Properties.Settings.Default.WatermarkFont ;
                 WatermarkFontSize = Properties.Settings.Default.WatermarkSize ;
+                WatermarkColor = Properties.Settings.Default.WatermarkColor;
                 WatermarkPosition = (Posicoes)Properties.Settings.Default.WatermarkPosition;
                 AddShadow = Properties.Settings.Default.AddShadow;
             } catch(Exception e) {
@@ -116,7 +118,7 @@ namespace FotosDaPiteca.Models
             }
         }
 
-        Size _ImageSize = new Size(800, 600);
+        Size _ImageSize = new Size(320, 240);
         public Size ImageSize
         {
             get { return _ImageSize; }
@@ -137,7 +139,7 @@ namespace FotosDaPiteca.Models
             get { return _RenderedImageSize; }
             set
             {
-                if (_RenderedImageSize != value)
+                if (_RenderedImageSize.Width != value.Width || _RenderedImageSize.Height != value.Height)
                 {
                     _RenderedImageSize = value;
                     RaisePropertyChanged("RenderedImageSize");
@@ -429,6 +431,12 @@ namespace FotosDaPiteca.Models
     public class Size : INotifyPropertyChanged
     {
         #region Construtores
+        public Size()
+        {
+            Width = 0;
+            Height = 0;
+        }
+
         public Size(int width, int height)
         {
             Width = width;

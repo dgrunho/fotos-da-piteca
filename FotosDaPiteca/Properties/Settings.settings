@@ -20,5 +20,8 @@
     <Setting Name="UseWatermark" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
+    <Setting Name="WatermarkColor" Type="System.String" Scope="User">
+      <Value Profile="(Default)">#FFFFFFFF</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

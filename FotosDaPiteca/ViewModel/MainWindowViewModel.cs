@@ -153,7 +153,7 @@ namespace FotosDaPiteca.ViewModel
                 {
                     _ImagemWidth = value * ScaleX;
                    RaisePropertyChanged("ImagemWidth");
-                   FotoSelecionada.RenderedImageSize = new Models.Size((int)_ImagemWidth, (int)ImagemHeight);
+                   FotoSelecionada.RenderedImageSize = new Models.Size((int)_ImagemWidth / 2, (int)ImagemHeight / 2);
                 }
             }
         }

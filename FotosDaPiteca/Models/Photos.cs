@@ -261,7 +261,7 @@ namespace FotosDaPiteca.Models
             }
         }
 
-        bool _UseWaterMark;
+        bool _UseWaterMark = true;
         public bool UseWaterMark
         {
             get { return _UseWaterMark; }
@@ -272,6 +272,57 @@ namespace FotosDaPiteca.Models
                     _UseWaterMark = value;
                     RaisePropertyChanged("UseWaterMark");
                     RenderImage();
+                }
+            }
+        }
+
+        bool _AddShadow = true;
+        public bool AddShadow
+        {
+            get { return _AddShadow; }
+            set
+            {
+                if (_AddShadow != value)
+                {
+                    _AddShadow = value;
+                    RaisePropertyChanged("AddShadow");
+                    RenderImage();
+                }
+            }
+        }
+
+        int _ShadowRadius = 7;
+        public int ShadowRadius
+        {
+            get { return _ShadowRadius; }
+            set
+            {
+                if (_ShadowRadius != value)
+                {
+                    _ShadowRadius = value;
+                    RaisePropertyChanged("ShadowRadius");
+                    if (AddShadow)
+                    {
+                        RenderImage();
+                    }
+                }
+            }
+        }
+
+        string _ShadowColor = "#FF000000";
+        public string ShadowColor
+        {
+            get { return _ShadowColor; }
+            set
+            {
+                if (_ShadowColor != value)
+                {
+                    _ShadowColor = value;
+                    RaisePropertyChanged("ShadowColor");
+                    if (AddShadow)
+                    {
+                        RenderImage();
+                    }
                 }
             }
         }
@@ -330,7 +381,7 @@ namespace FotosDaPiteca.Models
                 IsLoading = true;
                 await Task.Factory.StartNew(() =>
                 {
-                    RenderedImage = PhotoHelper.RenderFinal(Image, RenderedImageSize.ToDrawingSize(), UseWaterMark, WaterMark, (int)WaterMarkPosition, WaterMarkColor, WaterMarkFont, WaterMarkFontSize);
+                    RenderedImage = PhotoHelper.RenderFinal(this, RenderedImageSize.ToDrawingSize());
                     RenderedThumb = PhotoHelper.RenderThumb(RenderedImage, RenderedThumbSize.ToDrawingSize());
                 });
                 IsLoading = false;
@@ -341,7 +392,7 @@ namespace FotosDaPiteca.Models
         public void RenderImage(string FilePath)
         {
 
-            File.WriteAllBytes(FilePath, PhotoHelper.RenderFinal(Image, ImageSize.ToDrawingSize(), UseWaterMark, WaterMark, (int)WaterMarkPosition, WaterMarkColor, WaterMarkFont, WaterMarkFontSize));
+            File.WriteAllBytes(FilePath, PhotoHelper.RenderFinal(this, ImageSize.ToDrawingSize()));
         }
 
         void RaisePropertyChanged(string prop)

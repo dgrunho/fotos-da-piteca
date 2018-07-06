@@ -104,7 +104,12 @@
                                             <ColumnDefinition Width="*"/>
                                             <ColumnDefinition Width="Auto"/>
                                         </Grid.ColumnDefinitions>
-                                        <TextBox Text="{Binding FotoSelecionada.WaterMark}" FontFamily="{Binding FotoSelecionada.WaterMarkFont}" IsEnabled="{Binding FotoSelecionada.UseWaterMark}" materialDesign:HintAssist.Hint="Marca de água" Style="{StaticResource MaterialDesignFloatingHintTextBox}" Margin="0,0,20,0"/>
+                                        <TextBox FontFamily="{Binding FotoSelecionada.WaterMarkFont}" IsEnabled="{Binding FotoSelecionada.UseWaterMark}" materialDesign:HintAssist.Hint="Marca de água" Style="{StaticResource MaterialDesignFloatingHintTextBox}" Margin="0,0,20,0">
+                                            <TextBox.Text>
+                                                <Binding Path="FotoSelecionada.WaterMark" 
+             UpdateSourceTrigger="PropertyChanged"/>
+                                            </TextBox.Text>
+                                        </TextBox>
                                         <Button Grid.Column="1" 
                                             HorizontalAlignment="Right" 
                                             VerticalAlignment="Bottom" 
@@ -159,8 +164,14 @@
                                             <ColumnDefinition Width="*"/>
                                             <ColumnDefinition Width="Auto"/>
                                         </Grid.ColumnDefinitions>
-                                        <ComboBox ItemsSource="{Binding Source={StaticResource dataFromEnum}}"
-                                                  SelectedItem="{Binding FotoSelecionada.WaterMarkPosition}" />
+                                        <ComboBox materialDesign:HintAssist.Hint="Posição"
+                                                  Style="{StaticResource MaterialDesignFloatingHintComboBox}"
+                                                  ItemsSource="{Binding Source={StaticResource dataFromEnum}}"
+                                                  SelectedItem="{Binding FotoSelecionada.WaterMarkPosition}" 
+                                                  Grid.Column="0"/>
+                                        <CheckBox Grid.Column="1" 
+                                                  Margin="10,0,0,0"
+                                                  IsChecked="{Binding FotoSelecionada.AddShadow}">Sombra</CheckBox>
                                     </Grid>
                                     
                                 </StackPanel>
@@ -195,15 +206,15 @@
                         </Grid.RowDefinitions>
                         <Image x:Name="ImgBig" Source="{Binding FotoSelecionada.RenderedImage}" Margin="5" Stretch="Uniform"/>
                         <ProgressBar Value="50"
-                                 IsIndeterminate="{Binding FotoSelecionada.IsLoading}"
+                                     IsIndeterminate="{Binding FotoSelecionada.IsLoading}"
                                      VerticalAlignment="Bottom"
-                             Height="5"
+                                     Height="5"
                                      Visibility="{Binding FotoSelecionada.ShowProgress}"/>
 
-                        <StackPanel>
+                        <!--<StackPanel>
                             <TextBlock Text="{Binding ImagemWidth}"/>
                             <TextBlock Text="{Binding ImagemHeight}"/>
-                        </StackPanel>
+                        </StackPanel>-->
 
 
                     </Grid>

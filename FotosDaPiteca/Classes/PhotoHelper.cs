@@ -27,9 +27,9 @@ namespace FotosDaPiteca.Classes
             }
         }
 
-        public static byte[] RenderFinal(byte[] Original, SizeF Tamanho, bool UseWatermark, string Watermark, int WatermarkPosition, string WatermarkColor, string WatermarkFont, int WatermarkFontSize)
+        public static byte[] RenderFinal(FotosDaPiteca.Models.Photo Foto, SizeF Tamanho)
         {
-            using (MemoryStream ms = new MemoryStream(Original))
+            using (MemoryStream ms = new MemoryStream(Foto.Image))
             {
                 using (Bitmap bm = new Bitmap(ms))
                 {
@@ -46,35 +46,36 @@ namespace FotosDaPiteca.Classes
                     {
                         using (Graphics gr = Graphics.FromImage(bmFinal))
                         {
-                            gr.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
-                            gr.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.HighQuality;
-                            gr.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+                            gr.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighSpeed;
+                            gr.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.HighSpeed;
+                            gr.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.Low;
                             gr.DrawImage(bm, 0, 0, ZoomedSize.Width, ZoomedSize.Height);
-                            if (UseWatermark)
+                            if (Foto.UseWaterMark)
                             {
                                 gr.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAlias;
-                                int RenderFontSize = WatermarkFontSize;
-                                RenderFontSize = Convert.ToInt32((Convert.ToDouble(WatermarkFontSize) / Convert.ToDouble(bm.Height)) * Convert.ToDouble(ZoomedSize.Height));
-                                SizeF s = gr.MeasureString(Watermark, new Font(WatermarkFont, RenderFontSize));
+                                int RenderFontSize = Foto.WaterMarkFontSize;
+                                RenderFontSize = Convert.ToInt32((Convert.ToDouble(Foto.WaterMarkFontSize) / Convert.ToDouble(bm.Height)) * Convert.ToDouble(ZoomedSize.Height));
+                                SizeF s = gr.MeasureString(Foto.WaterMark, new Font(Foto.WaterMarkFont, RenderFontSize));
 
 
 
-                                PointF Posicao = GetTextDrawPosition(WatermarkPosition, new SizeF(bmFinal.Size.Width, bmFinal.Size.Height), s);
+                                PointF Posicao = GetTextDrawPosition((int)Foto.WaterMarkPosition, new SizeF(bmFinal.Size.Width, bmFinal.Size.Height), s);
 
-                                try
-                                {
-                                    using (Bitmap Blur = GetWaterMarkShadow(Watermark, s, Color.Black, new Font(WatermarkFont, RenderFontSize)))
+                                if (Foto.AddShadow) {
+
+                                    using (Bitmap Blur = GetWaterMarkShadow(Foto.WaterMark, s, Color.FromArgb(100, Color.Black), new Font(Foto.WaterMarkFont, RenderFontSize), Foto.ShadowRadius))
                                     {
-                                        gr.DrawImage(Blur, Posicao.X - 5, Posicao.Y - 5);
+                                        if (Blur != null)
+                                        {
+                                            gr.DrawImage(Blur, Posicao.X - 5, Posicao.Y - 5);
+                                        }
+
                                     }
+
                                 }
-                                catch (Exception e) { }
+                                
 
-
-
-
-
-                                gr.DrawString(Watermark, new Font(WatermarkFont, RenderFontSize), new SolidBrush(System.Drawing.ColorTranslator.FromHtml(WatermarkColor)), Posicao);
+                                gr.DrawString(Foto.WaterMark, new Font(Foto.WaterMarkFont, RenderFontSize), new SolidBrush(System.Drawing.ColorTranslator.FromHtml(Foto.WaterMarkColor)), Posicao);
                             }
 
                         }
@@ -89,23 +90,32 @@ namespace FotosDaPiteca.Classes
             }
         }
 
-        private static Bitmap GetWaterMarkShadow(string Watermark, SizeF ShadowSize, Color WatermarkColor, Font WatermarkFont)
+        private static Bitmap GetWaterMarkShadow(string Watermark, SizeF ShadowSize, Color WatermarkColor, Font WatermarkFont, int ShadowRadious)
         {
-            using (Bitmap bmFinal = new Bitmap((int)ShadowSize.Width + 10, (int)ShadowSize.Height + 10))
+            if (ShadowSize.Width > 0 && ShadowSize.Height > 0)
             {
-                using (Graphics gr = Graphics.FromImage(bmFinal))
+                using (Bitmap bmFinal = new Bitmap((int)ShadowSize.Width + 10, (int)ShadowSize.Height + 10))
                 {
-                    gr.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
-                    gr.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.HighQuality;
-                    gr.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
-                    gr.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAlias;
-                    gr.Clear(Color.Transparent);
-                    gr.DrawString(Watermark, WatermarkFont, new SolidBrush(WatermarkColor), new PointF(5, 5));
+                    using (Graphics gr = Graphics.FromImage(bmFinal))
+                    {
+                        gr.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighSpeed;
+                        gr.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.HighSpeed;
+                        gr.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.Low;
+                        gr.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAlias;
+                        gr.Clear(Color.Transparent);
+                        gr.DrawString(Watermark, WatermarkFont, new SolidBrush(WatermarkColor), new PointF(5, 5));
+
+                        GraphicsPath gp = new GraphicsPath();
+                        float emSize = gr.DpiY * WatermarkFont.SizeInPoints / 72;
+                        gp.AddString(Watermark, WatermarkFont.FontFamily, (int)WatermarkFont.Style, emSize, new RectangleF(5, 5, (float)((ShadowSize.Width - 5) * 5.25), ShadowSize.Height - 5), StringFormat.GenericDefault);
+                        gr.DrawPath(new Pen(WatermarkColor, 15), gp);
+                    }
+                    var blur = new GaussianBlur(bmFinal as Bitmap);
+                    Bitmap result = blur.Process(ShadowRadious);
+                    return result;
                 }
-                var blur = new GaussianBlur(bmFinal as Bitmap);
-                Bitmap result = blur.Process(10);
-                return result;
             }
+            return null;
 
         }
 

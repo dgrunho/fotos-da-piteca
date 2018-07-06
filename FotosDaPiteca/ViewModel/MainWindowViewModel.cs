@@ -157,6 +157,7 @@ namespace FotosDaPiteca.ViewModel
                 }
             }
         }
+
         double _ImagemHeight;
         public double ImagemHeight
         {
@@ -174,6 +175,22 @@ namespace FotosDaPiteca.ViewModel
             }
         }
 
+        SnackbarMessageQueue _PropertiesMessageQueue = new SnackbarMessageQueue();
+        public SnackbarMessageQueue PropertiesMessageQueue
+        {
+            get
+            {
+                return _PropertiesMessageQueue;
+            }
+            set
+            {
+                if (_PropertiesMessageQueue != value)
+                {
+                    _PropertiesMessageQueue = value;
+                    RaisePropertyChanged("PropertiesMessageQueue");
+                }
+            }
+        }
 
         #endregion
 
@@ -216,7 +233,7 @@ namespace FotosDaPiteca.ViewModel
 
             if (ColorPickerWindow.ShowDialog(out color) == true)
             {
-                FotoSelecionada.WaterMarkColor = new ColorConverter().ConvertToString(color);
+                FotoSelecionada.WatermarkColor = new ColorConverter().ConvertToString(color);
             }
 
             ////We can pass a bool to choose if we preview the font directly in the list of fonts.
@@ -226,11 +243,11 @@ namespace FotosDaPiteca.ViewModel
 
 
             //ColorFontDialog dialog = new ColorFontDialog(previewFontInFontList, allowArbitraryFontSizes);
-            //if (FotoSelecionada.WaterMarkFont == null)
+            //if (FotoSelecionada.WatermarkFont == null)
             //{
-            //    FotoSelecionada.WaterMarkFont = "Segoe UI";
+            //    FotoSelecionada.WatermarkFont = "Segoe UI";
             //}
-            //FontInfo fi = new FontInfo(new System.Windows.Media.FontFamily(FotoSelecionada.WaterMarkFont), 18, FontStyles.Normal, FontStretches.Normal, FontWeights.Normal, System.Windows.Media.Brushes.Black);
+            //FontInfo fi = new FontInfo(new System.Windows.Media.FontFamily(FotoSelecionada.WatermarkFont), 18, FontStyles.Normal, FontStretches.Normal, FontWeights.Normal, System.Windows.Media.Brushes.Black);
             //dialog.Font = fi;
 
             ////Optional custom allowed size range
@@ -241,7 +258,7 @@ namespace FotosDaPiteca.ViewModel
             //    FontInfo font = dialog.Font;
             //    if (font != null)
             //    {
-            //        FotoSelecionada.WaterMarkFont = font.Family.ToString();
+            //        FotoSelecionada.WatermarkFont = font.Family.ToString();
             //        //FontInfo.ApplyFont(MyTextBox, font);
             //    }
             //}
@@ -252,13 +269,27 @@ namespace FotosDaPiteca.ViewModel
 
             foreach (Photo p in Fotos)
             {
-                p.WaterMark = FotoSelecionada.WaterMark;
-                p.WaterMarkFont = FotoSelecionada.WaterMarkFont;
-                p.WaterMarkFontSize = FotoSelecionada.WaterMarkFontSize;
-                p.WaterMarkPosition = FotoSelecionada.WaterMarkPosition;
-                p.WaterMarkColor = FotoSelecionada.WaterMarkColor;
-                p.UseWaterMark = FotoSelecionada.UseWaterMark;
+                p.Watermark = FotoSelecionada.Watermark;
+                p.WatermarkFont = FotoSelecionada.WatermarkFont;
+                p.WatermarkFontSize = FotoSelecionada.WatermarkFontSize;
+                p.WatermarkPosition = FotoSelecionada.WatermarkPosition;
+                p.WatermarkColor = FotoSelecionada.WatermarkColor;
+                p.UseWatermark = FotoSelecionada.UseWatermark;
             }
+            Task.Factory.StartNew(() => PropertiesMessageQueue.Enqueue("Dados memorizados"));
+        });
+
+        public RelayCommand Memorizar => new RelayCommand(delegate (object o)
+        {
+
+            Properties.Settings.Default.UseWatermark = FotoSelecionada.UseWatermark;
+            Properties.Settings.Default.Watermark = FotoSelecionada.Watermark;
+            Properties.Settings.Default.WatermarkFont = FotoSelecionada.WatermarkFont;
+            Properties.Settings.Default.WatermarkSize = FotoSelecionada.WatermarkFontSize;
+            Properties.Settings.Default.WatermarkPosition = (int)FotoSelecionada.WatermarkPosition;
+            Properties.Settings.Default.AddShadow = FotoSelecionada.AddShadow;
+            Properties.Settings.Default.Save();
+            Task.Factory.StartNew(() => PropertiesMessageQueue.Enqueue("Dados memorizados"));
         });
 
 

@@ -50,20 +50,20 @@ namespace FotosDaPiteca.Classes
                             gr.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.HighSpeed;
                             gr.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.Low;
                             gr.DrawImage(bm, 0, 0, ZoomedSize.Width, ZoomedSize.Height);
-                            if (Foto.UseWaterMark)
+                            if (Foto.UseWatermark)
                             {
                                 gr.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAlias;
-                                int RenderFontSize = Foto.WaterMarkFontSize;
-                                RenderFontSize = Convert.ToInt32((Convert.ToDouble(Foto.WaterMarkFontSize) / Convert.ToDouble(bm.Height)) * Convert.ToDouble(ZoomedSize.Height));
-                                SizeF s = gr.MeasureString(Foto.WaterMark, new Font(Foto.WaterMarkFont, RenderFontSize));
+                                int RenderFontSize = Foto.WatermarkFontSize;
+                                RenderFontSize = Convert.ToInt32((Convert.ToDouble(Foto.WatermarkFontSize) / Convert.ToDouble(bm.Height)) * Convert.ToDouble(ZoomedSize.Height));
+                                SizeF s = gr.MeasureString(Foto.Watermark, new Font(Foto.WatermarkFont, RenderFontSize));
 
 
 
-                                PointF Posicao = GetTextDrawPosition((int)Foto.WaterMarkPosition, new SizeF(bmFinal.Size.Width, bmFinal.Size.Height), s);
+                                PointF Posicao = GetTextDrawPosition((int)Foto.WatermarkPosition, new SizeF(bmFinal.Size.Width, bmFinal.Size.Height), s);
 
                                 if (Foto.AddShadow) {
 
-                                    using (Bitmap Blur = GetWaterMarkShadow(Foto.WaterMark, s, Color.FromArgb(100, Color.Black), new Font(Foto.WaterMarkFont, RenderFontSize), Foto.ShadowRadius))
+                                    using (Bitmap Blur = GetWatermarkShadow(Foto.Watermark, s, Color.FromArgb(100, Color.Black), new Font(Foto.WatermarkFont, RenderFontSize), Foto.ShadowRadius))
                                     {
                                         if (Blur != null)
                                         {
@@ -75,7 +75,7 @@ namespace FotosDaPiteca.Classes
                                 }
                                 
 
-                                gr.DrawString(Foto.WaterMark, new Font(Foto.WaterMarkFont, RenderFontSize), new SolidBrush(System.Drawing.ColorTranslator.FromHtml(Foto.WaterMarkColor)), Posicao);
+                                gr.DrawString(Foto.Watermark, new Font(Foto.WatermarkFont, RenderFontSize), new SolidBrush(System.Drawing.ColorTranslator.FromHtml(Foto.WatermarkColor)), Posicao);
                             }
 
                         }
@@ -90,7 +90,7 @@ namespace FotosDaPiteca.Classes
             }
         }
 
-        private static Bitmap GetWaterMarkShadow(string Watermark, SizeF ShadowSize, Color WatermarkColor, Font WatermarkFont, int ShadowRadious)
+        private static Bitmap GetWatermarkShadow(string Watermark, SizeF ShadowSize, Color WatermarkColor, Font WatermarkFont, int ShadowRadious)
         {
             if (ShadowSize.Width > 0 && ShadowSize.Height > 0)
             {

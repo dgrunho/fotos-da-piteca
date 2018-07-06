@@ -37,7 +37,18 @@ namespace FotosDaPiteca.Models
 
         public Photo()
         {
-
+            try
+            {
+                UseWatermark = Properties.Settings.Default.UseWatermark;
+                Watermark = Properties.Settings.Default.Watermark;
+                WatermarkFont = Properties.Settings.Default.WatermarkFont;
+                WatermarkFontSize = Properties.Settings.Default.WatermarkSize;
+                WatermarkPosition = (Posicoes)Properties.Settings.Default.WatermarkPosition;
+                AddShadow = Properties.Settings.Default.AddShadow;
+            }
+            catch (Exception e)
+            {
+            }
         }
 
         public Photo(FileInfo FilePath)
@@ -45,6 +56,15 @@ namespace FotosDaPiteca.Models
             Name = FilePath.Name;
             OriginalPath = FilePath.FullName;
             Image = File.ReadAllBytes(FilePath.FullName);
+            try {
+                UseWatermark = Properties.Settings.Default.UseWatermark;
+                Watermark = Properties.Settings.Default.Watermark;
+                WatermarkFont = Properties.Settings.Default.WatermarkFont ;
+                WatermarkFontSize = Properties.Settings.Default.WatermarkSize ;
+                WatermarkPosition = (Posicoes)Properties.Settings.Default.WatermarkPosition;
+                AddShadow = Properties.Settings.Default.AddShadow;
+            } catch(Exception e) {
+            }
         }
 
         #endregion
@@ -171,17 +191,17 @@ namespace FotosDaPiteca.Models
 
 
 
-        string _WaterMark;
-        public string WaterMark
+        string _Watermark;
+        public string Watermark
         {
-            get { return _WaterMark; }
+            get { return _Watermark; }
             set
             {
-                if (_WaterMark != value)
+                if (_Watermark != value)
                 {
-                    _WaterMark = value;
-                    RaisePropertyChanged("WaterMark");
-                    if (UseWaterMark)
+                    _Watermark = value;
+                    RaisePropertyChanged("Watermark");
+                    if (UseWatermark)
                     {
                         RenderImage();
                     }
@@ -189,17 +209,17 @@ namespace FotosDaPiteca.Models
             }
         }
 
-        string _WaterMarkFont = "Segoe UI";
-        public string WaterMarkFont
+        string _WatermarkFont = "Segoe UI";
+        public string WatermarkFont
         {
-            get { return _WaterMarkFont; }
+            get { return _WatermarkFont; }
             set
             {
-                if (_WaterMarkFont != value)
+                if (_WatermarkFont != value)
                 {
-                    _WaterMarkFont = value;
-                    RaisePropertyChanged("WaterMarkFont");
-                    if (UseWaterMark)
+                    _WatermarkFont = value;
+                    RaisePropertyChanged("WatermarkFont");
+                    if (UseWatermark)
                     {
                         RenderImage();
                     }
@@ -207,17 +227,17 @@ namespace FotosDaPiteca.Models
             }
         }
 
-        string _WaterMarkColor = "#FF000000";
-        public string WaterMarkColor
+        string _WatermarkColor = "#FF000000";
+        public string WatermarkColor
         {
-            get { return _WaterMarkColor; }
+            get { return _WatermarkColor; }
             set
             {
-                if (_WaterMarkColor != value)
+                if (_WatermarkColor != value)
                 {
-                    _WaterMarkColor = value;
-                    RaisePropertyChanged("WaterMarkColor");
-                    if (UseWaterMark)
+                    _WatermarkColor = value;
+                    RaisePropertyChanged("WatermarkColor");
+                    if (UseWatermark)
                     {
                         RenderImage();
                     }
@@ -225,17 +245,17 @@ namespace FotosDaPiteca.Models
             }
         }
 
-        int _WaterMarkFontSize = 120;
-        public int WaterMarkFontSize
+        int _WatermarkFontSize = 120;
+        public int WatermarkFontSize
         {
-            get { return _WaterMarkFontSize; }
+            get { return _WatermarkFontSize; }
             set
             {
-                if (_WaterMarkFontSize != value)
+                if (_WatermarkFontSize != value)
                 {
-                    _WaterMarkFontSize = value;
-                    RaisePropertyChanged("WaterMarkFontSize");
-                    if (UseWaterMark)
+                    _WatermarkFontSize = value;
+                    RaisePropertyChanged("WatermarkFontSize");
+                    if (UseWatermark)
                     {
                         RenderImage();
                     }
@@ -243,17 +263,17 @@ namespace FotosDaPiteca.Models
             }
         }
 
-        Posicoes _WaterMarkPosition = Posicoes.Centro;
-        public Posicoes WaterMarkPosition
+        Posicoes _WatermarkPosition = Posicoes.Centro;
+        public Posicoes WatermarkPosition
         {
-            get { return _WaterMarkPosition; }
+            get { return _WatermarkPosition; }
             set
             {
-                if (_WaterMarkPosition != value)
+                if (_WatermarkPosition != value)
                 {
-                    _WaterMarkPosition = value;
-                    RaisePropertyChanged("WaterMarkPosition");
-                    if (UseWaterMark)
+                    _WatermarkPosition = value;
+                    RaisePropertyChanged("WatermarkPosition");
+                    if (UseWatermark)
                     {
                         RenderImage();
                     }
@@ -261,16 +281,16 @@ namespace FotosDaPiteca.Models
             }
         }
 
-        bool _UseWaterMark = true;
-        public bool UseWaterMark
+        bool _UseWatermark = true;
+        public bool UseWatermark
         {
-            get { return _UseWaterMark; }
+            get { return _UseWatermark; }
             set
             {
-                if (_UseWaterMark != value)
+                if (_UseWatermark != value)
                 {
-                    _UseWaterMark = value;
-                    RaisePropertyChanged("UseWaterMark");
+                    _UseWatermark = value;
+                    RaisePropertyChanged("UseWatermark");
                     RenderImage();
                 }
             }

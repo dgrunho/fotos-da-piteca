@@ -350,7 +350,11 @@ namespace FotosDaPiteca.ViewModel
             openFileDialog.Filter = "Projeto Fotos da Piteca|*.fdp;*.png|Outros Ficheiros|*.*";
             if (openFileDialog.ShowDialog() == true)
             {
-
+                using (FileStream fileStream = new FileStream(openFileDialog.FileName, FileMode.Open))
+                {
+                    XmlSerializer serializer = new XmlSerializer(typeof(ObservableCollection<Photo>));
+                    Fotos = (ObservableCollection<Photo>)serializer.Deserialize(fileStream);
+                }
             }
         });
 

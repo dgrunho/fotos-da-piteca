@@ -396,7 +396,7 @@ namespace FotosDaPiteca.Models
 
         #region Metodos e Eventos
 
-        async void RenderImage()
+        async public void RenderImage()
         {
             if (Image != null)
             {

@@ -260,40 +260,77 @@
             </Grid>
             
             <GridSplitter Grid.Column="1" HorizontalAlignment="Left"  Margin="6,50,0,50" VerticalAlignment="Stretch" Width="5"/>
-            <materialDesign:Card Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="8,4,4,4">
-                <Grid x:Name="grdBackGround" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                    <helpers:DataPiping.DataPipes>
-                        <helpers:DataPipeCollection>
-                            <helpers:DataPipe Source="{Binding Path=ActualWidth, ElementName=grdBackGround}"
-                         Target="{Binding Path=ImagemWidth, Mode=OneWayToSource}"/>
-                            <helpers:DataPipe Source="{Binding Path=ActualHeight, ElementName=grdBackGround}"
-                         Target="{Binding Path=ImagemHeight, Mode=OneWayToSource}"/>
-                        </helpers:DataPipeCollection>
-                    </helpers:DataPiping.DataPipes>
+            <Grid Grid.Column="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <materialDesign:Card Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="8,4,4,0">
+                    <ListBox SelectedIndex="{Binding SelectedToolIndex}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <VirtualizingStackPanel Orientation="Horizontal" />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ListBoxItem>
+                            <materialDesign:PackIcon Kind="CursorDefault" Width="24" Height="24" />
+                        </ListBoxItem>
+                        <ListBoxItem>
+                            <materialDesign:PackIcon Kind="CursorPointer" Width="24" Height="24" />
+                        </ListBoxItem>
 
-                    <Grid HorizontalAlignment="Center">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="*" />
-                            <RowDefinition Height="Auto" />
-                        </Grid.RowDefinitions>
-                        <Image x:Name="ImgBig" Source="{Binding FotoSelecionada.RenderedImage}" Margin="5" Stretch="Uniform"/>
-                        <ProgressBar Value="50"
+                    </ListBox>
+                </materialDesign:Card>
+
+                <materialDesign:Card Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="8,4,4,4">
+
+                    <Grid x:Name="grdBackGround" Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                        <helpers:DataPiping.DataPipes>
+                            <helpers:DataPipeCollection>
+                                <helpers:DataPipe Source="{Binding Path=ActualWidth, ElementName=grdBackGround}"
+                         Target="{Binding Path=ImagemWidth, Mode=OneWayToSource}"/>
+                                <helpers:DataPipe Source="{Binding Path=ActualHeight, ElementName=grdBackGround}"
+                         Target="{Binding Path=ImagemHeight, Mode=OneWayToSource}"/>
+                            </helpers:DataPipeCollection>
+                        </helpers:DataPiping.DataPipes>
+
+                        <Grid x:Name="grdImg" HorizontalAlignment="Center" Margin="5">
+
+                            <Image x:Name="ImgBig" 
+                                       Source="{Binding FotoSelecionada.RenderedImage}"  
+                                       Stretch="None" 
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center"
+                                       MouseMove="ImgBig_MouseMove" 
+                                       MouseEnter="ImgBig_MouseEnter" 
+                                       MouseLeave="ImgBig_MouseLeave"
+                                   MouseDown="ImgBig_MouseDown"
+                                   MouseUp="ImgBig_MouseUp"/>
+                            <Canvas Width="{Binding ActualWidth, ElementName=grdImg}" 
+                                    Height="{Binding ActualHeight, ElementName=grdImg}"
+                                    ClipToBounds="True">
+
+                                <Ellipse Canvas.Top="{Binding CircleCenter.Y}" 
+                                         Canvas.Left="{Binding CircleCenter.X}" 
+                                         Visibility="{Binding ShowTool}"
+                                         StrokeThickness="2" 
+                                         Stroke="Red"
+                                         Width="{Binding CircleSize}" 
+                                         Height="{Binding CircleSize}" />
+                            </Canvas>
+
+                            <ProgressBar Value="50"
                                      IsIndeterminate="{Binding FotoSelecionada.IsLoading}"
                                      VerticalAlignment="Bottom"
                                      Height="5"
                                      Visibility="{Binding FotoSelecionada.ShowProgress}"/>
-
-                        <!--<StackPanel>
-                            <TextBlock Text="{Binding ImagemWidth}"/>
-                            <TextBlock Text="{Binding ImagemHeight}"/>
-                        </StackPanel>-->
-
-
+                        </Grid>
                     </Grid>
-                </Grid>
-                
+                    
+           
+
             </materialDesign:Card>
-            
+                 </Grid>
             <!--<ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Auto">
                 <ItemsControl x:Name="icDados" ItemsSource="{Binding Fotos}" Margin="5">
                     <ItemsControl.ItemsPanel>
@@ -339,7 +376,7 @@
                              Width="50" Height="50"/>
         </materialDesign:Card>
 
-        <materialDesign:Snackbar MessageQueue="{Binding PropertiesMessageQueue}"
+        <materialDesign:Snackbar Grid.Row="1" MessageQueue="{Binding PropertiesMessageQueue}"
                                                  x:Name="snPropriedades" />
     </Grid>
 </Controls:MetroWindow>

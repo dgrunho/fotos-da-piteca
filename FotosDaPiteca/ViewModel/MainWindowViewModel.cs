@@ -26,6 +26,9 @@ namespace FotosDaPiteca.ViewModel
     class MainWindowViewModel : ViewModelBase
 
     {
+        #region "Variables"
+        Classes.DrawHelper dh;
+        #endregion
         #region "Properties"
 
         string _Titulo = "Fotos da Piteca";
@@ -239,6 +242,132 @@ namespace FotosDaPiteca.ViewModel
             }
         }
 
+        System.Windows.Controls.Image _ImagemDraw;
+        public System.Windows.Controls.Image ImagemDraw
+        {
+            get
+            {
+                return _ImagemDraw;
+            }
+            set
+            {
+                if (_ImagemDraw != value)
+                {
+                    _ImagemDraw = value;
+                    RaisePropertyChanged("ImagemDraw");
+                }
+            }
+        }
+
+        int _SelectedToolIndex = 0;
+        public int SelectedToolIndex
+        {
+            get
+            {
+                return _SelectedToolIndex;
+            }
+            set
+            {
+                if (_SelectedToolIndex != value)
+                {
+                    _SelectedToolIndex = value;
+                    
+                    RaisePropertyChanged("SelectedToolIndex");
+                    if (_SelectedToolIndex == 1) {
+                        if (dh == null) {
+                            dh = new Classes.DrawHelper(ImagemDraw, FotoSelecionada, this);
+                        }
+                    }
+                }
+            }
+        }
+
+        Point _CurrPoint;
+        public Point CurrPoint
+        {
+            get
+            {
+                return _CurrPoint;
+            }
+            set
+            {
+                if (_CurrPoint != value)
+                {
+                    _CurrPoint = value;
+                    RaisePropertyChanged("CurrPoint");
+                }
+            }
+        }
+
+        Point _CircleCenter;
+        public Point CircleCenter
+        {
+            get
+            {
+                return _CircleCenter;
+            }
+            set
+            {
+                if (_CircleCenter != value)
+                {
+                    _CircleCenter = value;
+                    RaisePropertyChanged("CircleCenter");
+                }
+            }
+        }
+
+        int _CircleSize = 50;
+        public int CircleSize
+        {
+            get
+            {
+                return _CircleSize;
+            }
+            set
+            {
+                if (_CircleSize != value)
+                {
+                    _CircleSize = value;
+                    RaisePropertyChanged("CircleSize");
+                }
+            }
+        }
+
+        bool _MouseLeftButtonIsDown = false;
+        public bool MouseLeftButtonIsDown
+        {
+            get
+            {
+                return _MouseLeftButtonIsDown;
+            }
+            set
+            {
+                if (_MouseLeftButtonIsDown != value)
+                {
+                    _MouseLeftButtonIsDown = value;
+                    RaisePropertyChanged("MouseLeftButtonIsDown");
+                }
+            }
+        }
+
+        Visibility _ShowTool = Visibility.Collapsed;
+        public Visibility ShowTool
+        {
+            get
+            {
+                return _ShowTool;
+            }
+            set
+            {
+                if (_ShowTool != value)
+                {
+                    _ShowTool = value;
+                    RaisePropertyChanged("ShowTool");
+                }
+            }
+        }
+
+
         #endregion
 
         #region "Initialization"
@@ -340,7 +469,7 @@ namespace FotosDaPiteca.ViewModel
         {
             Fotos = new ObservableCollection<Photo>();
             FotoSelecionada = new Photo();
-
+            Importar();
         });
 
         public RelayCommand cmdAbrir => new RelayCommand(delegate (object o)

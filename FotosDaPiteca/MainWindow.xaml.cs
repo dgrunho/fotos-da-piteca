@@ -76,7 +76,7 @@ namespace FotosDaPiteca
             {
                 var point = e.GetPosition((Image)sender);
                 vm.CurrPoint = point;
-                vm.CircleCenter = new Point(point.X - (vm.CircleSize / 2), point.Y - (vm.CircleSize / 2));
+                vm.CircleCenter = new Point(point.X - (vm.ToolSize / 2), point.Y - (vm.ToolSize / 2));
             }
             
         }

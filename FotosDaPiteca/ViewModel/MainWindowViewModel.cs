@@ -104,6 +104,30 @@ namespace FotosDaPiteca.ViewModel
 
         }
 
+        public List<int> TamanhosTool
+        {
+            get
+            {
+                List<int> _TamanhosTool = new List<int>();
+                _TamanhosTool.AddRange(new int[] { 20, 40, 60, 80, 100, 120, 140, 160, 180, 200, 220, 240 });
+                return _TamanhosTool;
+            }
+
+        }
+
+        public List<int> OpacidadeTool
+        {
+            get
+            {
+                List<int> _OpacidadeTool = new List<int>();
+                for (int i = 1; i <= 100; i++) {
+                    _OpacidadeTool.Add(i);
+                }
+                return _OpacidadeTool;
+            }
+
+        }
+
         Photo _FotoSelecionada = new Photo();
         public Photo FotoSelecionada
         {
@@ -316,19 +340,36 @@ namespace FotosDaPiteca.ViewModel
             }
         }
 
-        int _CircleSize = 50;
-        public int CircleSize
+        int _ToolSize = 40;
+        public int ToolSize
         {
             get
             {
-                return _CircleSize;
+                return _ToolSize;
             }
             set
             {
-                if (_CircleSize != value)
+                if (_ToolSize != value)
                 {
-                    _CircleSize = value;
-                    RaisePropertyChanged("CircleSize");
+                    _ToolSize = value;
+                    RaisePropertyChanged("ToolSize");
+                }
+            }
+        }
+
+        int _ToolHardness = 30;
+        public int ToolHardness
+        {
+            get
+            {
+                return _ToolHardness;
+            }
+            set
+            {
+                if (_ToolHardness != value)
+                {
+                    _ToolHardness = value;
+                    RaisePropertyChanged("ToolHardness");
                 }
             }
         }

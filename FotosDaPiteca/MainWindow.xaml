@@ -278,6 +278,20 @@
                         <ListBoxItem>
                             <materialDesign:PackIcon Kind="CursorPointer" Width="24" Height="24" />
                         </ListBoxItem>
+                        <ListBoxItem>
+                            <ComboBox materialDesign:HintAssist.Hint="Tamanho"
+                                                  Style="{StaticResource MaterialDesignFloatingHintComboBox}"
+                                                  ItemsSource="{Binding Path=DataContext.TamanhosTool, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:MainWindow}}}"
+                                                  SelectedItem="{Binding ToolSize}" 
+                                                  Grid.Column="0"/>
+                        </ListBoxItem>
+                        <ListBoxItem>
+                            <ComboBox materialDesign:HintAssist.Hint="Dureza"
+                                                  Style="{StaticResource MaterialDesignFloatingHintComboBox}"
+                                                  ItemsSource="{Binding Path=DataContext.OpacidadeTool, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:MainWindow}}}"
+                                                  SelectedItem="{Binding ToolHardness}" 
+                                                  Grid.Column="0"/>
+                        </ListBoxItem>
 
                     </ListBox>
                 </materialDesign:Card>
@@ -315,8 +329,8 @@
                                          Visibility="{Binding ShowTool}"
                                          StrokeThickness="2" 
                                          Stroke="Red"
-                                         Width="{Binding CircleSize}" 
-                                         Height="{Binding CircleSize}" />
+                                         Width="{Binding ToolSize}" 
+                                         Height="{Binding ToolSize}" />
                             </Canvas>
 
                             <ProgressBar Value="50"

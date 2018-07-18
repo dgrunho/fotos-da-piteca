@@ -96,6 +96,7 @@
     <Compile Include="Converters\BooleanToVisibility.cs" />
     <Compile Include="Helpers\DataPiping.cs" />
     <Compile Include="Helpers\GaussianBlur.cs" />
+    <Compile Include="Helpers\Opacity.cs" />
     <Compile Include="Helpers\RelayCommand.cs" />
     <Compile Include="Models\Photos.cs" />
     <Compile Include="ViewModel\MainWindowViewModel.cs" />

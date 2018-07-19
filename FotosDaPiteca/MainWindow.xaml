@@ -266,34 +266,45 @@
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
                 <materialDesign:Card Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="8,4,4,0">
-                    <ListBox SelectedIndex="{Binding SelectedToolIndex}">
-                        <ItemsControl.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <VirtualizingStackPanel Orientation="Horizontal" />
-                            </ItemsPanelTemplate>
-                        </ItemsControl.ItemsPanel>
-                        <ListBoxItem>
-                            <materialDesign:PackIcon Kind="CursorDefault" Width="24" Height="24" />
-                        </ListBoxItem>
-                        <ListBoxItem>
-                            <materialDesign:PackIcon Kind="CursorPointer" Width="24" Height="24" />
-                        </ListBoxItem>
-                        <ListBoxItem>
-                            <ComboBox materialDesign:HintAssist.Hint="Tamanho"
+                    <Grid>
+                        <ListBox SelectedIndex="{Binding SelectedToolIndex}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <VirtualizingStackPanel Orientation="Horizontal" />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ListBoxItem>
+                                <materialDesign:PackIcon Kind="CursorDefault" Width="24" Height="24" />
+                            </ListBoxItem>
+                            <ListBoxItem>
+                                <materialDesign:PackIcon Kind="CursorPointer" Width="24" Height="24" />
+                            </ListBoxItem>
+                            <ListBoxItem>
+                                <ComboBox materialDesign:HintAssist.Hint="Tamanho"
                                                   Style="{StaticResource MaterialDesignFloatingHintComboBox}"
                                                   ItemsSource="{Binding Path=DataContext.TamanhosTool, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:MainWindow}}}"
                                                   SelectedItem="{Binding ToolSize}" 
                                                   Grid.Column="0"/>
-                        </ListBoxItem>
-                        <ListBoxItem>
-                            <ComboBox materialDesign:HintAssist.Hint="Dureza"
+                            </ListBoxItem>
+                            <ListBoxItem>
+                                <ComboBox materialDesign:HintAssist.Hint="Dureza"
                                                   Style="{StaticResource MaterialDesignFloatingHintComboBox}"
                                                   ItemsSource="{Binding Path=DataContext.OpacidadeTool, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:MainWindow}}}"
                                                   SelectedItem="{Binding ToolHardness}" 
                                                   Grid.Column="0"/>
-                        </ListBoxItem>
+                            </ListBoxItem>
 
-                    </ListBox>
+                        </ListBox>
+                        <Button Command="{Binding Path=DataContext.cmdSaveImage, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:MainWindow}}}" 
+                                Margin="0,0,10,0"
+                                HorizontalAlignment="Right"
+                                Foreground="White"
+                                Style="{StaticResource MaterialDesignFlatButton}">
+                            <materialDesign:PackIcon Kind="ContentSave" Width="24" Height="24" />
+                        </Button>
+
+                    </Grid>
+                    
                 </materialDesign:Card>
 
                 <materialDesign:Card Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="8,4,4,4">
@@ -308,20 +319,22 @@
                             </helpers:DataPipeCollection>
                         </helpers:DataPiping.DataPipes>
 
-                        <Grid x:Name="grdImg" HorizontalAlignment="Center" Margin="5">
-
+                        <Grid x:Name="grdImg" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="5">
                             <Image x:Name="ImgBig" 
                                        Source="{Binding FotoSelecionada.RenderedImage}"  
-                                       Stretch="None" 
+                                       Stretch="Uniform"
                                        HorizontalAlignment="Center"
                                        VerticalAlignment="Center"
                                        MouseMove="ImgBig_MouseMove" 
                                        MouseEnter="ImgBig_MouseEnter" 
                                        MouseLeave="ImgBig_MouseLeave"
+                                   
                                    MouseDown="ImgBig_MouseDown"
                                    MouseUp="ImgBig_MouseUp"/>
-                            <Canvas Width="{Binding ActualWidth, ElementName=grdImg}" 
-                                    Height="{Binding ActualHeight, ElementName=grdImg}"
+
+                            
+                            <Canvas HorizontalAlignment="Stretch"
+                                    VerticalAlignment="Stretch"
                                     ClipToBounds="True">
 
                                 <Ellipse Canvas.Top="{Binding CircleCenter.Y}" 
@@ -329,9 +342,10 @@
                                          Visibility="{Binding ShowTool}"
                                          StrokeThickness="2" 
                                          Stroke="Red"
-                                         Width="{Binding ToolSize}" 
-                                         Height="{Binding ToolSize}" />
+                                         Width="{Binding ToolSizeDisplay}" 
+                                         Height="{Binding ToolSizeDisplay}" />
                             </Canvas>
+                            
 
                             <ProgressBar Value="50"
                                      IsIndeterminate="{Binding FotoSelecionada.IsLoading}"
@@ -339,11 +353,29 @@
                                      Height="5"
                                      Visibility="{Binding FotoSelecionada.ShowProgress}"/>
                         </Grid>
-                    </Grid>
-                    
-           
 
-            </materialDesign:Card>
+                        <StackPanel Visibility="Collapsed">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="w: "/>
+                                <TextBlock Text="{Binding FotoSelecionada.RenderedImageSize.Width}"/>
+                                <TextBlock Text=" * "/>
+                                <TextBlock Text="h: "/>
+                                <TextBlock Text="{Binding FotoSelecionada.RenderedImageSize.Height}"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="w: "/>
+                                <TextBlock Text="{Binding ImagemWidth}"/>
+                                <TextBlock Text=" * "/>
+                                <TextBlock Text="h: "/>
+                                <TextBlock Text="{Binding ImagemHeight}"/>
+                            </StackPanel>
+                        </StackPanel>
+
+                    </Grid>
+
+
+
+                </materialDesign:Card>
                  </Grid>
             <!--<ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Auto">
                 <ItemsControl x:Name="icDados" ItemsSource="{Binding Fotos}" Margin="5">

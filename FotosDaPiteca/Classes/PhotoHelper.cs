@@ -7,27 +7,30 @@ using System.Drawing;
 using System.IO;
 using System.Drawing.Drawing2D;
 using FotosDaPiteca.Effects;
+using System.Runtime.InteropServices;
 
 namespace FotosDaPiteca.Classes
 {
      class PhotoHelper
     {
-        public static byte[] RenderThumb(byte[] Original, Size Tamanho)
+
+        public static System.Windows.Media.Imaging.BitmapSource RenderThumb(byte[] Original, Size Tamanho)
         {
             using (MemoryStream ms = new MemoryStream(Original))
             {
                 using (Bitmap bmOriginal = new Bitmap(ms))
                 {
-                    using (MemoryStream msSave = new MemoryStream())
-                    {
-                        bmOriginal.GetThumbnailImage(Tamanho.Width, Tamanho.Height, null, IntPtr.Zero).Save(msSave, System.Drawing.Imaging.ImageFormat.Jpeg);
-                        return msSave.ToArray();
-                    }
+                    return ConvertToBitmapSource(bmOriginal);
+                    //using (MemoryStream msSave = new MemoryStream())
+                    //{
+                    //    bmOriginal.GetThumbnailImage(Tamanho.Width, Tamanho.Height, null, IntPtr.Zero).Save(msSave, System.Drawing.Imaging.ImageFormat.Jpeg);
+                    //    return msSave.ToArray();
+                    //}
                 }
             }
         }
 
-        public static byte[] RenderFinal(FotosDaPiteca.Models.Photo Foto, SizeF Tamanho)
+        public static System.Windows.Media.Imaging.BitmapSource RenderFinal(FotosDaPiteca.Models.Photo Foto, SizeF Tamanho)
         {
             using (MemoryStream ms = new MemoryStream(Foto.Image))
             {
@@ -79,11 +82,12 @@ namespace FotosDaPiteca.Classes
                             }
 
                         }
-                        using (MemoryStream msSave = new MemoryStream())
-                        {
-                            bmFinal.Save(msSave, System.Drawing.Imaging.ImageFormat.Bmp);
-                            return msSave.ToArray();
-                        }
+                        return ConvertToBitmapSource(bmFinal);
+                        //using (MemoryStream msSave = new MemoryStream())
+                        //{
+                        //    bmFinal.Save(msSave, System.Drawing.Imaging.ImageFormat.Bmp);
+                        //    return msSave.ToArray();
+                        //}
                     }
                     
                 }
@@ -152,6 +156,22 @@ namespace FotosDaPiteca.Classes
                     return new Point(Margin, Margin);
             }
 
+        }
+
+
+        [DllImport("gdi32.dll", EntryPoint = "DeleteObject")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool DeleteObject([In] IntPtr hObject);
+        public static System.Windows.Media.Imaging.BitmapSource ConvertToBitmapSource(Bitmap bitmap)
+        {
+            var handle = bitmap.GetHbitmap();
+            try
+            {
+                System.Windows.Media.Imaging.BitmapSource bms = System.Windows.Interop.Imaging.CreateBitmapSourceFromHBitmap(handle, IntPtr.Zero, System.Windows.Int32Rect.Empty, System.Windows.Media.Imaging.BitmapSizeOptions.FromEmptyOptions());
+                bms.Freeze();
+                return bms;
+            }
+            finally { DeleteObject(handle); }
         }
     }
 }

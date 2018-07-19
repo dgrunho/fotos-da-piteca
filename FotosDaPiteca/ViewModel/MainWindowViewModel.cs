@@ -141,7 +141,13 @@ namespace FotosDaPiteca.ViewModel
                 {
                     _FotoSelecionada = value;
                     RaisePropertyChanged("FotoSelecionada");
-                    FotoSelecionada.RenderedImageSize = new Models.Size((int)ImagemWidth, (int)ImagemHeight);
+                    SelectedToolIndex = 0;
+                    if (FotoSelecionada != null) {
+                        FotoSelecionada.RenderedImageSize = new Models.Size((int)ImagemWidth, (int)ImagemHeight);
+                        float ZoomFactor = Math.Min(FotoSelecionada.RenderedImageSize.Width / FotoSelecionada.ImageSize.Width, FotoSelecionada.RenderedImageSize.Height / FotoSelecionada.ImageSize.Height);
+                        ToolSizeDisplay = _ToolSize * ZoomFactor;
+                    }
+                    
                 }
             }
         }
@@ -227,7 +233,9 @@ namespace FotosDaPiteca.ViewModel
                 {
                     _ImagemWidth = value * ScaleX;
                     RaisePropertyChanged("ImagemWidth");
-                    FotoSelecionada.RenderedImageSize = new Models.Size((int)_ImagemWidth / 2, (int)ImagemHeight / 2);
+                    Update();
+
+
                 }
             }
         }
@@ -245,6 +253,7 @@ namespace FotosDaPiteca.ViewModel
                 {
                     _ImagemHeight = value * ScaleY;
                     RaisePropertyChanged("ImagemHeight");
+                    Update();
                 }
             }
         }
@@ -298,9 +307,7 @@ namespace FotosDaPiteca.ViewModel
                     
                     RaisePropertyChanged("SelectedToolIndex");
                     if (_SelectedToolIndex == 1) {
-                        if (dh == null) {
-                            dh = new Classes.DrawHelper(ImagemDraw, FotoSelecionada, this);
-                        }
+                        Update();
                     }
                 }
             }
@@ -353,6 +360,25 @@ namespace FotosDaPiteca.ViewModel
                 {
                     _ToolSize = value;
                     RaisePropertyChanged("ToolSize");
+                    float ZoomFactor = Math.Min((float)FotoSelecionada.RenderedImageSize.Width / (float)FotoSelecionada.ImageSize.Width, (float)FotoSelecionada.RenderedImageSize.Height / (float)FotoSelecionada.ImageSize.Height);
+                    ToolSizeDisplay = _ToolSize * ZoomFactor;
+                }
+            }
+        }
+
+        float _ToolSizeDisplay = 40;
+        public float ToolSizeDisplay
+        {
+            get
+            {
+                return _ToolSizeDisplay;
+            }
+            set
+            {
+                if (_ToolSizeDisplay != value)
+                {
+                    _ToolSizeDisplay = value;
+                    RaisePropertyChanged("ToolSizeDisplay");
                 }
             }
         }
@@ -545,6 +571,11 @@ namespace FotosDaPiteca.ViewModel
             Exportar();
         });
 
+        public RelayCommand cmdSaveImage => new RelayCommand(delegate (object o)
+        {
+            Exportar();
+        });
+
 
         #endregion
 
@@ -668,6 +699,24 @@ namespace FotosDaPiteca.ViewModel
                     TiposLetra = _tiposLetra;
                 });
             });
+        }
+
+        void Update()
+        {
+            float ZoomFactor = Math.Min((float)ImagemWidth / (float)FotoSelecionada.ImageSize.Width, (float)ImagemHeight / (float)FotoSelecionada.ImageSize.Height);
+            FotoSelecionada.RenderedImageSize = new Models.Size((int)(FotoSelecionada.ImageSize.Width * ZoomFactor), (int)(FotoSelecionada.ImageSize.Height * ZoomFactor));
+            ToolSizeDisplay = ToolSize * ZoomFactor;
+
+            if (SelectedToolIndex == 1)
+            {
+                if (dh == null)
+                {
+                    dh = new Classes.DrawHelper(ImagemDraw, FotoSelecionada, this);
+                }
+                else {
+                    dh.DrawRenderImage();
+                }
+            }
         }
 
         #endregion

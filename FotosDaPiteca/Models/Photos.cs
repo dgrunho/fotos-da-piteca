@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Xml.Serialization;
 using System.IO;
 using FotosDaPiteca.Classes;
+using System.Windows.Media.Imaging;
 
 namespace FotosDaPiteca.Models
 {
@@ -148,8 +149,8 @@ namespace FotosDaPiteca.Models
             }
         }
 
-        byte[] _RenderedImage;
-        public byte[] RenderedImage
+        BitmapSource _RenderedImage;
+        public BitmapSource RenderedImage
         {
             get { return _RenderedImage; }
             set
@@ -177,8 +178,8 @@ namespace FotosDaPiteca.Models
                 }
             }
         }
-        byte[] _RenderedThumb;
-        public byte[] RenderedThumb
+        BitmapSource _RenderedThumb;
+        public BitmapSource RenderedThumb
         {
             get { return _RenderedThumb; }
             set
@@ -404,7 +405,7 @@ namespace FotosDaPiteca.Models
                 await Task.Factory.StartNew(() =>
                 {
                     RenderedImage = PhotoHelper.RenderFinal(this, RenderedImageSize.ToDrawingSize());
-                    RenderedThumb = PhotoHelper.RenderThumb(RenderedImage, RenderedThumbSize.ToDrawingSize());
+                    RenderedThumb = RenderedImage; //PhotoHelper.RenderThumb(RenderedImage, RenderedThumbSize.ToDrawingSize());
                 });
                 IsLoading = false;
             }
@@ -414,7 +415,7 @@ namespace FotosDaPiteca.Models
         public void RenderImage(string FilePath)
         {
 
-            File.WriteAllBytes(FilePath, PhotoHelper.RenderFinal(this, ImageSize.ToDrawingSize()));
+            //File.WriteAllBytes(FilePath, PhotoHelper.RenderFinal(this, ImageSize.ToDrawingSize()));
         }
 
         void RaisePropertyChanged(string prop)

@@ -75,8 +75,11 @@ namespace FotosDaPiteca
             if (vm.SelectedToolIndex == 1)
             {
                 var point = e.GetPosition((Image)sender);
+
+                float ZoomFactor = Math.Min((float)vm.FotoSelecionada.RenderedImageSize.Width / (float)vm.FotoSelecionada.ImageSize.Width, (float)vm.FotoSelecionada.RenderedImageSize.Height / (float)vm.FotoSelecionada.ImageSize.Height);
+
                 vm.CurrPoint = point;
-                vm.CircleCenter = new Point(point.X - (vm.ToolSize / 2), point.Y - (vm.ToolSize / 2));
+                vm.CircleCenter = new Point(point.X - (vm.ToolSizeDisplay / 2), point.Y - (vm.ToolSizeDisplay / 2));
             }
             
         }

@@ -142,7 +142,8 @@
                                     </Grid.ColumnDefinitions>
                                     <Image Source="{Binding RenderedThumb}" Width="60" Stretch="UniformToFill" Margin="5" />
                                     <StackPanel Grid.Column="1" Margin="8 8 8 8" VerticalAlignment="Center" >
-                                        <TextBlock VerticalAlignment="Center" FontWeight="Bold" TextWrapping="WrapWithOverflow" TextTrimming="CharacterEllipsis" Text="{Binding Name}" ToolTip="{Binding Name}"/>
+                                        <TextBox Text="{Binding Name}" ToolTip="{Binding Name}" materialDesign:HintAssist.Hint="Nome do Ficheiro"/>
+                                        <!--<TextBlock VerticalAlignment="Center" FontWeight="Bold" TextWrapping="WrapWithOverflow" TextTrimming="CharacterEllipsis" Text="{Binding Name}" ToolTip="{Binding Name}"/>-->
                                     </StackPanel>
                                     <Button Click="ApagarFotoButton_Click"
                                             Margin="0,0,0,0"
@@ -159,7 +160,34 @@
                 <materialDesign:Card Grid.Row="1" Margin="5" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                     <Grid>
                         <StackPanel Grid.Row="1" Margin="5" >
-                            <TextBox Text="{Binding FotoSelecionada.Name}" Margin="5" materialDesign:HintAssist.Hint="Nome do Ficheiro" Style="{StaticResource MaterialDesignFloatingHintTextBox}"/>
+                            <ListBox SelectedIndex="{Binding SelectedToolIndex}">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <WrapPanel Orientation="Horizontal" />
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ListBoxItem>
+                                    <materialDesign:PackIcon Kind="CursorDefault" Width="24" Height="24" />
+                                </ListBoxItem>
+                                <ListBoxItem>
+                                    <materialDesign:PackIcon Kind="CursorPointer" Width="24" Height="24" />
+                                </ListBoxItem>
+                                <ListBoxItem>
+                                    <ComboBox materialDesign:HintAssist.Hint="Tamanho"
+                                                  Style="{StaticResource MaterialDesignFloatingHintComboBox}"
+                                                  ItemsSource="{Binding Path=DataContext.TamanhosTool, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:MainWindow}}}"
+                                                  SelectedItem="{Binding ToolSize}" 
+                                                  Grid.Column="0"/>
+                                </ListBoxItem>
+                                <ListBoxItem>
+                                    <ComboBox materialDesign:HintAssist.Hint="Dureza"
+                                                  Style="{StaticResource MaterialDesignFloatingHintComboBox}"
+                                                  ItemsSource="{Binding Path=DataContext.OpacidadeTool, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:MainWindow}}}"
+                                                  SelectedItem="{Binding ToolHardness}" 
+                                                  Grid.Column="0"/>
+                                </ListBoxItem>
+
+                            </ListBox>
                             <Border Margin="0 16 0 8" BorderThickness="0 1 0 0" BorderBrush="{DynamicResource MaterialDesignDivider}"/>
                             <StackPanel >
                                 <CheckBox x:Name="cbWatermark" IsChecked="{Binding FotoSelecionada.UseWatermark}">Usar Marca de Água</CheckBox>
@@ -261,55 +289,9 @@
             
             <GridSplitter Grid.Column="1" HorizontalAlignment="Left"  Margin="6,50,0,50" VerticalAlignment="Stretch" Width="5"/>
             <Grid Grid.Column="1">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="*"/>
-                </Grid.RowDefinitions>
-                <materialDesign:Card Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="8,4,4,0">
-                    <Grid>
-                        <ListBox SelectedIndex="{Binding SelectedToolIndex}">
-                            <ItemsControl.ItemsPanel>
-                                <ItemsPanelTemplate>
-                                    <VirtualizingStackPanel Orientation="Horizontal" />
-                                </ItemsPanelTemplate>
-                            </ItemsControl.ItemsPanel>
-                            <ListBoxItem>
-                                <materialDesign:PackIcon Kind="CursorDefault" Width="24" Height="24" />
-                            </ListBoxItem>
-                            <ListBoxItem>
-                                <materialDesign:PackIcon Kind="CursorPointer" Width="24" Height="24" />
-                            </ListBoxItem>
-                            <ListBoxItem>
-                                <ComboBox materialDesign:HintAssist.Hint="Tamanho"
-                                                  Style="{StaticResource MaterialDesignFloatingHintComboBox}"
-                                                  ItemsSource="{Binding Path=DataContext.TamanhosTool, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:MainWindow}}}"
-                                                  SelectedItem="{Binding ToolSize}" 
-                                                  Grid.Column="0"/>
-                            </ListBoxItem>
-                            <ListBoxItem>
-                                <ComboBox materialDesign:HintAssist.Hint="Dureza"
-                                                  Style="{StaticResource MaterialDesignFloatingHintComboBox}"
-                                                  ItemsSource="{Binding Path=DataContext.OpacidadeTool, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:MainWindow}}}"
-                                                  SelectedItem="{Binding ToolHardness}" 
-                                                  Grid.Column="0"/>
-                            </ListBoxItem>
-
-                        </ListBox>
-                        <Button Command="{Binding Path=DataContext.cmdSaveImage, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:MainWindow}}}" 
-                                Margin="0,0,10,0"
-                                HorizontalAlignment="Right"
-                                Foreground="White"
-                                Style="{StaticResource MaterialDesignFlatButton}">
-                            <materialDesign:PackIcon Kind="ContentSave" Width="24" Height="24" />
-                        </Button>
-
-                    </Grid>
-                    
-                </materialDesign:Card>
-
                 <materialDesign:Card Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="8,4,4,4">
 
-                    <Grid x:Name="grdBackGround" Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                    <Grid x:Name="grdBackGround" Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="5">
                         <helpers:DataPiping.DataPipes>
                             <helpers:DataPipeCollection>
                                 <helpers:DataPipe Source="{Binding Path=ActualWidth, ElementName=grdBackGround}"
@@ -319,7 +301,7 @@
                             </helpers:DataPipeCollection>
                         </helpers:DataPiping.DataPipes>
 
-                        <Grid x:Name="grdImg" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="5">
+                        <Grid x:Name="grdImg" HorizontalAlignment="Center" VerticalAlignment="Center">
                             <Image x:Name="ImgBig" 
                                        Source="{Binding FotoSelecionada.RenderedImage}"  
                                        Stretch="Uniform"

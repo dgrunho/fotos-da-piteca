@@ -142,7 +142,9 @@ namespace FotosDaPiteca.ViewModel
                     _FotoSelecionada = value;
                     RaisePropertyChanged("FotoSelecionada");
                     SelectedToolIndex = 0;
+                    
                     if (FotoSelecionada != null) {
+                        
                         FotoSelecionada.RenderedImageSize = new Models.Size((int)ImagemWidth, (int)ImagemHeight);
                         float ZoomFactor = Math.Min(FotoSelecionada.RenderedImageSize.Width / FotoSelecionada.ImageSize.Width, FotoSelecionada.RenderedImageSize.Height / FotoSelecionada.ImageSize.Height);
                         ToolSizeDisplay = _ToolSize * ZoomFactor;
@@ -307,6 +309,8 @@ namespace FotosDaPiteca.ViewModel
                     
                     RaisePropertyChanged("SelectedToolIndex");
                     if (_SelectedToolIndex == 1) {
+                        //if (dh != null) dh.Destroy();
+                        dh = null;
                         Update();
                     }
                 }

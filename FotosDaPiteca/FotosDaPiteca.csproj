@@ -94,6 +94,7 @@
     <Compile Include="Classes\DrawHelper.cs" />
     <Compile Include="Classes\PhotoHelper.cs" />
     <Compile Include="Converters\BooleanToVisibility.cs" />
+    <Compile Include="Helpers\BitmapArray.cs" />
     <Compile Include="Helpers\DataPiping.cs" />
     <Compile Include="Helpers\GaussianBlur.cs" />
     <Compile Include="Helpers\Opacity.cs" />

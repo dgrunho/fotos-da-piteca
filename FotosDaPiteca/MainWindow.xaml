@@ -312,7 +312,7 @@
 
             <GridSplitter Grid.Column="1" HorizontalAlignment="Left"  Margin="6,50,0,50" VerticalAlignment="Stretch" Width="5"/>
             <Grid Grid.Column="1">
-                <materialDesign:Card Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="8,5,5,5">
+                <materialDesign:Card Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="8,4,4,4">
 
                     <Grid x:Name="grdBackGround" Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="5">
                         <helpers:DataPiping.DataPipes>
@@ -323,7 +323,9 @@
                          Target="{Binding Path=ImagemHeight, Mode=OneWayToSource}"/>
                             </helpers:DataPipeCollection>
                         </helpers:DataPiping.DataPipes>
-
+                        <Grid>
+                            <Image Stretch="Uniform" MaxHeight="300" Opacity="0.5" Source="pack://application:,,,/Recursos/PitecaFotografa.png"/>
+                        </Grid>
                         <Grid x:Name="grdImg" HorizontalAlignment="Center" VerticalAlignment="Center">
                             <Image x:Name="ImgBig" 
                                        Source="{Binding FotoSelecionada.RenderedImage}"  

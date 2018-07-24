@@ -27,7 +27,7 @@ namespace FotosDaPiteca.ViewModel
 
     {
         #region "Variables"
-        Classes.DrawHelper dh;
+        Classes.DrawTools.SmudgeDrawHelper sdh;
         #endregion
         #region "Properties"
 
@@ -308,10 +308,13 @@ namespace FotosDaPiteca.ViewModel
                     _SelectedToolIndex = value;
                     
                     RaisePropertyChanged("SelectedToolIndex");
-                    if (_SelectedToolIndex == 1) {
-                        //if (dh != null) dh.Destroy();
-                        dh = null;
+                    if (_SelectedToolIndex == 1)
+                    {
+                        sdh = null;
                         Update();
+                    }
+                    else {
+                        if (sdh != null) sdh.Save();
                     }
                 }
             }
@@ -713,12 +716,12 @@ namespace FotosDaPiteca.ViewModel
 
             if (SelectedToolIndex == 1)
             {
-                if (dh == null)
+                if (sdh == null)
                 {
-                    dh = new Classes.DrawHelper(ImagemDraw, FotoSelecionada, this);
+                    sdh = new Classes.DrawTools.SmudgeDrawHelper(ImagemDraw, FotoSelecionada, this);
                 }
                 else {
-                    dh.DrawRenderImage();
+                    sdh.DrawRenderImage();
                 }
             }
         }

@@ -48,7 +48,7 @@ namespace FotosDaPiteca.Models
                 WatermarkPosition = (Posicoes)Properties.Settings.Default.WatermarkPosition;
                 AddShadow = Properties.Settings.Default.AddShadow;
             }
-            catch (Exception e)
+            catch
             {
             }
         }
@@ -66,7 +66,7 @@ namespace FotosDaPiteca.Models
                 WatermarkColor = Properties.Settings.Default.WatermarkColor;
                 WatermarkPosition = (Posicoes)Properties.Settings.Default.WatermarkPosition;
                 AddShadow = Properties.Settings.Default.AddShadow;
-            } catch(Exception e) {
+            } catch {
             }
         }
 

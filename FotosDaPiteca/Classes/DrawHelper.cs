@@ -8,13 +8,15 @@ using System.Drawing;
 using System.IO;
 using System.Drawing.Drawing2D;
 using FotosDaPiteca.Effects;
+using FotosDaPiteca.Helpers;
 using System.Drawing.Imaging;
 using System.Timers;
 using System.ComponentModel;
+using System.Runtime.InteropServices;
 
-namespace FotosDaPiteca.Classes
+namespace FotosDaPiteca.Classes.DrawTools
 {
-    class DrawHelper
+    class SmudgeDrawHelper
     {
         public System.Windows.Controls.Image _img;
         public Models.Photo _Foto;
@@ -26,15 +28,72 @@ namespace FotosDaPiteca.Classes
         PointF LastPt;
         PointF CurrPt;
 
-        List<Tuple<PointF, PointF>> lstPts;
+        List<List<PointF>> LstBig;
+
+        int Step = 2;
+
+        System.Windows.Interop.InteropBitmap interopBitmap;
+
+        const uint FILE_MAP_ALL_ACCESS = 0xF001F;
+        const uint PAGE_READWRITE = 0x04;
+
+        private int bpp = System.Windows.Media.PixelFormats.Bgr32.BitsPerPixel / 8;
+
+
+        [DllImport("kernel32.dll", SetLastError = true)]
+        static extern IntPtr CreateFileMapping(IntPtr hFile,
+        IntPtr lpFileMappingAttributes,
+        uint flProtect,
+        uint dwMaximumSizeHigh,
+        uint dwMaximumSizeLow,
+        string lpName);
+
+        [DllImport("kernel32.dll", SetLastError = true)]
+        static extern IntPtr MapViewOfFile(IntPtr hFileMappingObject,
+        uint dwDesiredAccess,
+        uint dwFileOffsetHigh,
+        uint dwFileOffsetLow,
+        uint dwNumberOfBytesToMap);
+        Graphics grRender;
+        Graphics grFull;
+
+        public bool HasChanges = false;
+
+        public void Save()
+        {
+            if (HasChanges)
+            {
+                foreach (List<PointF> Ls in LstBig) {
+                    for (int i = 1; i <= Ls.Count - 1; i++) {
+                        int StepMultiplier = 1;
+                        if (zoomFactor >= 0.8)
+                        {
+                            StepMultiplier = 1;
+                        }
+                        else
+                        {
+                            StepMultiplier = 2;
+                        }
+                        
+                        ProcessPointsFull(Ls[i - 1], Ls[i], bmFull, false, 1, (float)_vm.ScaleX, (float)_vm.ScaleY, Step * StepMultiplier, grFull);
+                    }
+                }
+
+                using (MemoryStream msSave = new MemoryStream())
+                {
+                    bmFull.Save(msSave, System.Drawing.Imaging.ImageFormat.Bmp);
+                    _Foto.Image = msSave.ToArray();
+                }
+            }
+
+        }
 
         public void Destroy() {
-            lstPts.Clear();
             bmFull.Dispose();
             bmRender.Dispose();
         }
 
-        public DrawHelper(System.Windows.Controls.Image Img, FotosDaPiteca.Models.Photo Foto, ViewModel.MainWindowViewModel vm)
+        public SmudgeDrawHelper(System.Windows.Controls.Image Img, FotosDaPiteca.Models.Photo Foto, ViewModel.MainWindowViewModel vm)
         {
             _img = Img;
             _Foto = Foto;
@@ -56,13 +115,20 @@ namespace FotosDaPiteca.Classes
             CurrPt = new PointF();
             LastPt = ConvertionHelpers.PointConverter(e.GetPosition((System.Windows.Controls.Image)sender), (float)_vm.ScaleX, (float)_vm.ScaleY);
 
-            lstPts = new List<Tuple<PointF, PointF>>();
+            PointF LstPonto = new PointF((LastPt.X / zoomFactor), (LastPt.Y / zoomFactor));
+            if (LstBig == null)
+            {
+                LstBig = new List<List<PointF>>();
+            }
+            LstBig.Add(new List<PointF>());
+            LstBig[LstBig.Count - 1].Add(LstPonto);
         }
 
 
 
         private void _img_MouseMove(object sender, System.Windows.Input.MouseEventArgs e)
         {
+
             if (e.LeftButton == System.Windows.Input.MouseButtonState.Pressed)
             {
                 if (CurrPt != new PointF())
@@ -73,71 +139,48 @@ namespace FotosDaPiteca.Classes
 
                 CurrPt = ConvertionHelpers.PointConverter(e.GetPosition((System.Windows.Controls.Image)sender), (float)_vm.ScaleX, (float)_vm.ScaleY);
 
-                int Step = 2;
-                ProcessPointsFull(LastPt, CurrPt, bmRender, true, zoomFactor, (float)_vm.ScaleX, (float)_vm.ScaleY, Step);
+
+                
+                ProcessPointsFull(LastPt, CurrPt, bmRender, true, zoomFactor, (float)_vm.ScaleX, (float)_vm.ScaleY, Step, grRender);
 
                 PointF LstPonto = new PointF((LastPt.X / zoomFactor), (LastPt.Y / zoomFactor));
                 PointF CurPonto = new PointF((CurrPt.X / zoomFactor), (CurrPt.Y / zoomFactor));
-
-                lstPts.Add(new Tuple<PointF, PointF>(LstPonto, CurPonto));
-                if (zoomFactor >= 0.8)
-                {
-                    ProcessPointsFull(LstPonto, CurPonto, bmFull, false, 1, (float)_vm.ScaleX, (float)_vm.ScaleY, Step);
-                }
-                else
-                {
-                    ProcessPointsFull(LstPonto, CurPonto, bmFull, false, 1, (float)_vm.ScaleX, (float)_vm.ScaleY, Step * 2);
-                }
-
+                LstBig[LstBig.Count - 1].Add(CurPonto);
+                HasChanges = true;
             }
         }
-
 
 
         private void _img_MouseUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
-
-            //for (int i = 0; i <= lstPts.Count - 1; i++)
-            //{
-            //    ProcessPointsFull(lstPts[i].Item1, lstPts[i].Item2, bmFull, false, 1, (float)_vm.ScaleX, (float)_vm.ScaleY, 4);
-            //}
-            using (MemoryStream msSave = new MemoryStream())
-            {
-                bmFull.Save(msSave, System.Drawing.Imaging.ImageFormat.Bmp);
-                _Foto.Image = msSave.ToArray();
-            }
+            interopBitmap.Invalidate();
         }
 
-        private bool ProcessPointsFull(PointF LastPoint, PointF CurrPoint, Bitmap BmUse, bool Render, float zoom, float scaleX, float scaleY, int Step)
+        private bool ProcessPointsFull(PointF LastPoint, PointF CurrPoint, Bitmap BmUse, bool Render, float zoom, float scaleX, float scaleY, int Step, Graphics grRender)
         {
             PointF LstPonto = ConvertionHelpers.CircleCenter(LastPoint, (_vm.ToolSize * zoom) * scaleX);
 
             PointF CurPonto = ConvertionHelpers.CircleCenter(CurrPoint, (_vm.ToolSize * zoom) * scaleX);
 
-            using (Graphics gr = Graphics.FromImage(BmUse))
+            List<PointF> ls = ConvertionHelpers.BresenhamLinePlotter(LstPonto, CurPonto);
+            for (int i = Step; i <= ls.Count - 1; i += Step)
             {
-                gr.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.None;
-                gr.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.AssumeLinear;
-                gr.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
-
-
-                List<PointF> ls = ConvertionHelpers.BresenhamLinePlotter(LstPonto, CurPonto);
-                for (int i = Step; i <= ls.Count - 1; i += Step)
+                using (Bitmap bm = CaptureCircle(ls[i - Step], BmUse, zoom, scaleX, scaleY))
                 {
-                    using (Bitmap bm = CaptureCircle2(ls[i - Step], BmUse, zoom, scaleX, scaleY))
-                    {
-                        gr.DrawImage(Opacity.SetImageOpacity(bm, ((float)_vm.ToolHardness / 100)), ls[i]);
-                    }
+                    grRender.DrawImage(Opacity.SetImageOpacity(bm, ((float)_vm.ToolHardness / 100)), ls[i]);
                 }
+
             }
+
             if (Render)
             {
-                _Foto.RenderedImage = PhotoHelper.ConvertToBitmapSource((Bitmap)BmUse.GetThumbnailImage(_Foto.RenderedImageSize.Width, _Foto.RenderedImageSize.Height, null, IntPtr.Zero));
+                interopBitmap.Invalidate();
             }
             return true;
         }
 
-        private Bitmap CaptureCircle2(PointF Ponto, Bitmap bmUse, float zoom, float scaleX, float scaleY)
+
+        private Bitmap CaptureCircle(PointF Ponto, Bitmap bmUse, float zoom, float scaleX, float scaleY)
         {
             Bitmap bmCrop2 = null;
             Graphics grCrop2;
@@ -164,6 +207,13 @@ namespace FotosDaPiteca.Classes
             InvertedZoomFactor = ConvertionHelpers.InvertedZoomFactor(new SizeF(_Foto.RenderedImageSize.Width, _Foto.RenderedImageSize.Height), new SizeF(_Foto.ImageSize.Width, _Foto.ImageSize.Height));
         }
 
+
+
+
+
+
+
+
         public void DrawRenderImage()
         {
             using (MemoryStream ms = new MemoryStream(_Foto.Image))
@@ -175,25 +225,47 @@ namespace FotosDaPiteca.Classes
                     SizeF ZoomedSize = new SizeF(bm.Width * zoomFactor, bm.Height * zoomFactor);
 
 
-                    bmRender = new Bitmap((int)ZoomedSize.Width, (int)ZoomedSize.Height);
 
-                    using (Graphics gr = Graphics.FromImage(bmRender))
-                    {
-                        gr.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighSpeed;
-                        gr.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.HighSpeed;
-                        gr.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.Low;
-                        gr.DrawImage(bm, 0, 0, ZoomedSize.Width, ZoomedSize.Height);
-                    }
+
+                    uint byteCount = (uint)((int)ZoomedSize.Width * (int)ZoomedSize.Width * bpp);
+
+                    var sectionPointer = CreateFileMapping(new IntPtr(-1), IntPtr.Zero, PAGE_READWRITE, 0, byteCount, null);
+
+                    var mapPointer = MapViewOfFile(sectionPointer, FILE_MAP_ALL_ACCESS, 0, 0, byteCount);
+
+                    var format = System.Windows.Media.PixelFormats.Bgr32;
+
+                    interopBitmap = System.Windows.Interop.Imaging.CreateBitmapSourceFromMemorySection(sectionPointer, (int)ZoomedSize.Width, (int)ZoomedSize.Height, format,
+                        (int)(ZoomedSize.Width * format.BitsPerPixel / 8), 0) as System.Windows.Interop.InteropBitmap;
+
+
+                    bmRender = new Bitmap((int)ZoomedSize.Width, (int)ZoomedSize.Height,
+                                                (int)ZoomedSize.Width * bpp,
+                                                 System.Drawing.Imaging.PixelFormat.Format32bppPArgb,
+                                                mapPointer);
+                    grRender = Graphics.FromImage(bmRender);
+       
+                    grRender.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighSpeed;
+                    grRender.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.HighSpeed;
+                    grRender.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.Low;
+                    grRender.DrawImage(bm, 0, 0, ZoomedSize.Width, ZoomedSize.Height);
+
+
+                    _Foto.RenderedImage = interopBitmap;
+
+
+
 
                     bmFull = new Bitmap((int)bm.Width, (int)bm.Height);
 
-                    using (Graphics gr = Graphics.FromImage(bmFull))
-                    {
-                        gr.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighSpeed;
-                        gr.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.HighSpeed;
-                        gr.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.Low;
-                        gr.DrawImage(bm, 0, 0, bm.Width, bm.Height);
-                    }
+                    grFull = Graphics.FromImage(bmFull);
+
+                    grFull.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighSpeed;
+                    grFull.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.HighSpeed;
+                    grFull.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.Low;
+                    grFull.DrawImage(bm, 0, 0, bm.Width, bm.Height);
+
+                    interopBitmap.Invalidate();
                 }
 
             }

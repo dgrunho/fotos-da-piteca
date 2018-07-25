@@ -407,6 +407,8 @@ namespace FotosDaPiteca.ViewModel
             }
         }
 
+       
+
         bool _MouseLeftButtonIsDown = false;
         public bool MouseLeftButtonIsDown
         {

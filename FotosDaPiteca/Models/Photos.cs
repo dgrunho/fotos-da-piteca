@@ -34,6 +34,7 @@ namespace FotosDaPiteca.Models
 
 
         #endregion
+
         #region Construtores
 
         public Photo()
@@ -346,6 +347,78 @@ namespace FotosDaPiteca.Models
                     {
                         RenderImage();
                     }
+                }
+            }
+        }
+
+        int _Contrast = 0;
+        public int Contrast
+        {
+            get
+            {
+                return _Contrast;
+            }
+            set
+            {
+                if (_Contrast != value)
+                {
+                    _Contrast = value;
+                    RaisePropertyChanged("Contrast");
+                    RenderImage();
+                }
+            }
+        }
+
+        byte _RedBalance = 255;
+        public byte RedBalance
+        {
+            get
+            {
+                return _RedBalance;
+            }
+            set
+            {
+                if (_RedBalance != value)
+                {
+                    _RedBalance = value;
+                    RaisePropertyChanged("RedBalance");
+                    RenderImage();
+                }
+            }
+        }
+
+        byte _GreenBalance = 255;
+        public byte GreenBalance
+        {
+            get
+            {
+                return _GreenBalance;
+            }
+            set
+            {
+                if (_GreenBalance != value)
+                {
+                    _GreenBalance = value;
+                    RaisePropertyChanged("GreenBalance");
+                    RenderImage();
+                }
+            }
+        }
+
+        byte _BlueBalance = 255;
+        public byte BlueBalance
+        {
+            get
+            {
+                return _BlueBalance;
+            }
+            set
+            {
+                if (_BlueBalance != value)
+                {
+                    _BlueBalance = value;
+                    RaisePropertyChanged("BlueBalance");
+                    RenderImage();
                 }
             }
         }

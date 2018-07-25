@@ -32,10 +32,12 @@ namespace FotosDaPiteca.Classes
 
         public static System.Windows.Media.Imaging.BitmapSource RenderFinal(FotosDaPiteca.Models.Photo Foto, SizeF Tamanho)
         {
+            
             using (MemoryStream ms = new MemoryStream(Foto.Image))
             {
-                using (Bitmap bm = new Bitmap(ms))
+                using (Bitmap bmOriginal = new Bitmap(ms))
                 {
+                    Bitmap bm = (Bitmap)bmOriginal.Clone();
                     if (Tamanho.Width == 0) Tamanho.Width = 1;
                     if (Tamanho.Height == 0) Tamanho.Height = 1;
 
@@ -44,7 +46,16 @@ namespace FotosDaPiteca.Classes
                     SizeF ZoomedSize = new SizeF(bm.Width * ZoomFactor, bm.Height * ZoomFactor);
 
 
-
+                    if (Foto.RedBalance != 255 || Foto.GreenBalance != 255 || Foto.BlueBalance != 255)
+                    {
+                        bm = Effects.ColorBalance.SetImageColorBalance(bm, Foto.RedBalance, Foto.GreenBalance, Foto.BlueBalance);
+                    }
+                        
+                    if (Foto.Contrast != 0)
+                    {
+                        bm = Effects.Contrast.SetImageContrast(bm, Foto.Contrast);
+                    }
+                    
                     using (Bitmap bmFinal = new Bitmap((int)ZoomedSize.Width, (int)ZoomedSize.Height))
                     {
                         using (Graphics gr = Graphics.FromImage(bmFinal))
@@ -53,6 +64,10 @@ namespace FotosDaPiteca.Classes
                             gr.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.HighSpeed;
                             gr.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.Low;
                             gr.DrawImage(bm, 0, 0, ZoomedSize.Width, ZoomedSize.Height);
+
+
+
+
                             if (Foto.UseWatermark)
                             {
                                 gr.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAlias;

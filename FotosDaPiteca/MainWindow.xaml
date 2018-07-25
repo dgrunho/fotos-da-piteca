@@ -189,27 +189,172 @@
                                         <WrapPanel Orientation="Horizontal" />
                                     </ItemsPanelTemplate>
                                 </ItemsControl.ItemsPanel>
-                                <ListBoxItem>
-                                    <materialDesign:PackIcon Kind="CursorDefault" Width="24" Height="24" />
+                                <ListBoxItem Padding="8,8,0,8">
+                                    <StackPanel Orientation="Horizontal">
+                                        <materialDesign:PackIcon Margin="0,0,5,0" Kind="CursorDefault" Width="24" Height="24" />
+                                        <Border Margin="0,0,0,0" BorderThickness="1 0 0 0" BorderBrush="{DynamicResource MaterialDesignDivider}"/>
+                                    </StackPanel>
                                 </ListBoxItem>
-                                <ListBoxItem>
-                                    <materialDesign:PackIcon Kind="CursorPointer" Width="24" Height="24" />
-                                </ListBoxItem>
-                                <ListBoxItem>
-                                    <ComboBox materialDesign:HintAssist.Hint="Tamanho"
+                                <ListBoxItem Padding="8,8,0,8">
+                                    <StackPanel Orientation="Horizontal">
+                                        <StackPanel Orientation="Horizontal">
+                                            <materialDesign:PackIcon Kind="CursorPointer" Foreground="{DynamicResource MaterialDesignBody}" Width="24" Height="24" />
+                                            <StackPanel>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <TextBlock Text="T: " FontSize="10" Width="10" Foreground="{DynamicResource MaterialDesignBody}"/>
+                                                    <TextBlock Text="{Binding ToolSize}" FontSize="10" FontWeight="Bold" Foreground="{DynamicResource MaterialDesignBody}"/>
+                                                </StackPanel>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <TextBlock Text="D: " FontSize="10" Width="10" Foreground="{DynamicResource MaterialDesignBody}"/>
+                                                    <TextBlock Text="{Binding ToolHardness}" FontSize="10" FontWeight="Bold" Foreground="{DynamicResource MaterialDesignBody}"/>
+                                                </StackPanel>
+                                            </StackPanel>
+
+                                        </StackPanel>
+                                        <materialDesign:PopupBox StaysOpen="True" Margin="0,0,5,0">
+                                            <materialDesign:PopupBox.ToggleContent>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <Path Width="8" Height="8"
+                                              Margin="5"
+                                              Stretch="Uniform"
+                                              HorizontalAlignment="Right"
+                                              VerticalAlignment="Center"
+                                              Data="M7,10L12,15L17,10H7Z"
+                                              Fill="{DynamicResource MaterialDesignBody}" />
+                                                </StackPanel>
+
+                                            </materialDesign:PopupBox.ToggleContent>
+                                            <StackPanel Margin="10">
+                                                <ComboBox materialDesign:HintAssist.Hint="Tamanho"
                                                   Style="{StaticResource MaterialDesignFloatingHintComboBox}"
                                                   ItemsSource="{Binding Path=DataContext.TamanhosTool, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:MainWindow}}}"
                                                   SelectedItem="{Binding ToolSize}" 
-                                                  Grid.Column="0"/>
-                                </ListBoxItem>
-                                <ListBoxItem>
-                                    <ComboBox materialDesign:HintAssist.Hint="Dureza"
+                                                  Grid.Column="0"
+                                                  Margin="5"/>
+
+                                                <ComboBox materialDesign:HintAssist.Hint="Dureza"
                                                   Style="{StaticResource MaterialDesignFloatingHintComboBox}"
                                                   ItemsSource="{Binding Path=DataContext.OpacidadeTool, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:MainWindow}}}"
                                                   SelectedItem="{Binding ToolHardness}" 
-                                                  Grid.Column="0"/>
+                                                  Grid.Column="0"
+                                                  Margin="5"/>
+                                            </StackPanel>
+                                        </materialDesign:PopupBox>
+                                        <Border Margin="0" BorderThickness="1 0 0 0" BorderBrush="{DynamicResource MaterialDesignDivider}"/>
+                                    </StackPanel>
+
                                 </ListBoxItem>
 
+                                <ListBoxItem Padding="0" VerticalContentAlignment="Stretch">
+                                    <StackPanel Orientation="Horizontal">
+                                        <materialDesign:PopupBox StaysOpen="True" Margin="5,0,5,0">
+                                            <materialDesign:PopupBox.ToggleContent>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                                        <StackPanel Orientation="Horizontal">
+                                                            <materialDesign:PackIcon Kind="ContrastBox" Foreground="{DynamicResource MaterialDesignBody}" Width="24" Height="24" />
+                                                            <TextBlock Text="{Binding FotoSelecionada.Contrast}" FontWeight="Bold" Foreground="{DynamicResource MaterialDesignBody}" VerticalAlignment="Center"/>
+                                                            <TextBlock Text="%" FontWeight="Bold" Foreground="{DynamicResource MaterialDesignBody}" VerticalAlignment="Center"/>
+                                                        </StackPanel>
+                                                    </StackPanel>
+                                                    <Path Width="8" Height="8"
+                                              Margin="5"
+                                              Stretch="Uniform"
+                                              HorizontalAlignment="Right"
+                                              VerticalAlignment="Center"
+                                              Data="M7,10L12,15L17,10H7Z"
+                                              Fill="{DynamicResource MaterialDesignBody}" />
+                                                </StackPanel>
+
+                                            </materialDesign:PopupBox.ToggleContent>
+                                            <StackPanel Margin="10">
+                                                <Slider Grid.Column="1"
+                                        Minimum="-100"
+                                        Maximum="100"
+                                        Style="{StaticResource MaterialDesignDiscreteSlider}"
+                                        Value="{Binding FotoSelecionada.Contrast}" />
+                                            </StackPanel>
+                                        </materialDesign:PopupBox>
+                                        <Border Margin="0,8,0,8" BorderThickness="1 0 0 0" BorderBrush="{DynamicResource MaterialDesignDivider}"/>
+                                    </StackPanel>
+                                </ListBoxItem>
+                                <ListBoxItem Padding="0" VerticalContentAlignment="Stretch">
+
+                                    <materialDesign:PopupBox StaysOpen="True">
+                                        <materialDesign:PopupBox.ToggleContent>
+                                            <StackPanel Orientation="Horizontal" Margin="5,5,5,5">
+                                                <StackPanel Orientation="Horizontal">
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <materialDesign:PackIcon Kind="ChartBar" Foreground="{DynamicResource MaterialDesignBody}" Width="24" Height="24" />
+                                                        <StackPanel VerticalAlignment="Center">
+                                                            <StackPanel Orientation="Horizontal">
+                                                                <TextBlock Text="R: " Width="7" FontSize="6" Foreground="{DynamicResource MaterialDesignBody}"/>
+                                                                <TextBlock Text="{Binding FotoSelecionada.RedBalance}" FontSize="6" FontWeight="Bold" Foreground="{DynamicResource MaterialDesignBody}"/>
+                                                            </StackPanel>
+                                                            <StackPanel Orientation="Horizontal">
+                                                                <TextBlock Text="G: " Width="7" FontSize="6" Foreground="{DynamicResource MaterialDesignBody}"/>
+                                                                <TextBlock Text="{Binding FotoSelecionada.GreenBalance}" FontSize="6" FontWeight="Bold" Foreground="{DynamicResource MaterialDesignBody}"/>
+                                                            </StackPanel>
+                                                            <StackPanel Orientation="Horizontal">
+                                                                <TextBlock Text="B: " Width="7" FontSize="6" Foreground="{DynamicResource MaterialDesignBody}"/>
+                                                                <TextBlock Text="{Binding FotoSelecionada.BlueBalance}" FontSize="6" FontWeight="Bold" Foreground="{DynamicResource MaterialDesignBody}"/>
+                                                            </StackPanel>
+                                                        </StackPanel>
+
+                                                    </StackPanel>
+                                                </StackPanel>
+                                                <Path Width="8" Height="8"
+                                              Margin="5"
+                                              Stretch="Uniform"
+                                              HorizontalAlignment="Right"
+                                              VerticalAlignment="Center"
+                                              Data="M7,10L12,15L17,10H7Z"
+                                              Fill="{DynamicResource MaterialDesignBody}" />
+                                            </StackPanel>
+
+                                        </materialDesign:PopupBox.ToggleContent>
+                                        <StackPanel Margin="10">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                </Grid.ColumnDefinitions>
+                                                <TextBlock Text="R " Grid.Column="0" VerticalAlignment="Bottom"/>
+                                                <Slider Grid.Column="1"
+                                        Minimum="0"
+                                        Maximum="255"
+                                        Style="{StaticResource MaterialDesignDiscreteSlider}"
+                                        Value="{Binding FotoSelecionada.RedBalance}" />
+                                            </Grid>
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                </Grid.ColumnDefinitions>
+                                                <TextBlock Text="G " Grid.Column="0" VerticalAlignment="Bottom"/>
+                                                <Slider Grid.Column="1"
+                                        Minimum="0"
+                                        Maximum="255"
+                                        Style="{StaticResource MaterialDesignDiscreteSlider}"
+                                        Value="{Binding FotoSelecionada.GreenBalance}" />
+                                            </Grid>
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                </Grid.ColumnDefinitions>
+                                                <TextBlock Text="B " Grid.Column="0" VerticalAlignment="Bottom"/>
+                                                <Slider Grid.Column="1"
+                                        Minimum="0"
+                                        Maximum="255"
+                                        Style="{StaticResource MaterialDesignDiscreteSlider}"
+                                        Value="{Binding FotoSelecionada.BlueBalance}" />
+                                            </Grid>
+                                        </StackPanel>
+                                    </materialDesign:PopupBox>
+
+
+                                </ListBoxItem>
                             </ListBox>
                             <Border Margin="0 16 0 8" BorderThickness="0 1 0 0" BorderBrush="{DynamicResource MaterialDesignDivider}"/>
                             <StackPanel >

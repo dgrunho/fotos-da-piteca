@@ -120,5 +120,10 @@ namespace FotosDaPiteca
                 vm.MouseLeftButtonIsDown = false;
             }
         }
+
+        private void Card_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+
+        }
     }
 }

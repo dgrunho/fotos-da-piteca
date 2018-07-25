@@ -34,7 +34,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>Recursos\Icone_fit.ico</ApplicationIcon>
+    <ApplicationIcon>Recursos\Icone.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="ColorPickerWPF, Version=1.0.9.0, Culture=neutral, processorArchitecture=MSIL">
@@ -151,7 +151,8 @@
     <None Include="Recursos\PitecaFotografa.svg" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Recursos\Icone_fit.ico" />
+    <Resource Include="Recursos\Icone.ico" />
+    <Resource Include="Recursos\PitecaFotografa_Icon.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

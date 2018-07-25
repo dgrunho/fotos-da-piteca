@@ -12,7 +12,7 @@
         xmlns:Fotos="clr-namespace:FotosDaPiteca.Models"  
         xmlns:System="clr-namespace:System;assembly=mscorlib"
         mc:Ignorable="d"
-        Title="{Binding Titulo}" Height="600" Width="800"
+        Height="600" Width="800"
         TextElement.Foreground="{DynamicResource MaterialDesignBody}"
         TextElement.FontWeight="Regular"
         TextElement.FontSize="13"
@@ -107,7 +107,7 @@
                         </Button>
                     </StackPanel>
                 </materialDesign:PopupBox>
-                <TextBlock Text="Fotos da Piteca" HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="22"/>
+                <TextBlock Text="{Binding Titulo}" HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="22"/>
             </DockPanel>
         </materialDesign:ColorZone>
         <Grid Grid.Row="1">
@@ -313,21 +313,22 @@
             <GridSplitter Grid.Column="1" HorizontalAlignment="Left"  Margin="6,50,0,50" VerticalAlignment="Stretch" Width="5"/>
             <Grid Grid.Column="1">
                 <materialDesign:Card Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="8,4,4,4">
-
-                    <Grid x:Name="grdBackGround" Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="5">
-                        <helpers:DataPiping.DataPipes>
-                            <helpers:DataPipeCollection>
-                                <helpers:DataPipe Source="{Binding Path=ActualWidth, ElementName=grdBackGround}"
-                         Target="{Binding Path=ImagemWidth, Mode=OneWayToSource}"/>
-                                <helpers:DataPipe Source="{Binding Path=ActualHeight, ElementName=grdBackGround}"
-                         Target="{Binding Path=ImagemHeight, Mode=OneWayToSource}"/>
-                            </helpers:DataPipeCollection>
-                        </helpers:DataPiping.DataPipes>
-                        <Grid>
+                    <Grid>
+                        <Grid VerticalAlignment="Bottom" HorizontalAlignment="Right">
                             <Image Stretch="Uniform" MaxHeight="300" Opacity="0.5" Source="pack://application:,,,/Recursos/PitecaFotografa.png"/>
                         </Grid>
-                        <Grid x:Name="grdImg" HorizontalAlignment="Center" VerticalAlignment="Center">
-                            <Image x:Name="ImgBig" 
+                        <Grid x:Name="grdBackGround" Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="5">
+                            <helpers:DataPiping.DataPipes>
+                                <helpers:DataPipeCollection>
+                                    <helpers:DataPipe Source="{Binding Path=ActualWidth, ElementName=grdBackGround}"
+                         Target="{Binding Path=ImagemWidth, Mode=OneWayToSource}"/>
+                                    <helpers:DataPipe Source="{Binding Path=ActualHeight, ElementName=grdBackGround}"
+                         Target="{Binding Path=ImagemHeight, Mode=OneWayToSource}"/>
+                                </helpers:DataPipeCollection>
+                            </helpers:DataPiping.DataPipes>
+
+                            <Grid x:Name="grdImg" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                <Image x:Name="ImgBig" 
                                        Source="{Binding FotoSelecionada.RenderedImage}"  
                                        Stretch="Uniform"
                                        HorizontalAlignment="Center"
@@ -340,45 +341,47 @@
                                    MouseUp="ImgBig_MouseUp"/>
 
 
-                            <Canvas HorizontalAlignment="Stretch"
+                                <Canvas HorizontalAlignment="Stretch"
                                     VerticalAlignment="Stretch"
                                     ClipToBounds="True">
 
-                                <Ellipse Canvas.Top="{Binding CircleCenter.Y}" 
+                                    <Ellipse Canvas.Top="{Binding CircleCenter.Y}" 
                                          Canvas.Left="{Binding CircleCenter.X}" 
                                          Visibility="{Binding ShowTool}"
                                          StrokeThickness="2" 
                                          Stroke="Red"
                                          Width="{Binding ToolSizeDisplay}" 
                                          Height="{Binding ToolSizeDisplay}" />
-                            </Canvas>
+                                </Canvas>
 
 
-                            <ProgressBar Value="50"
+                                <ProgressBar Value="50"
                                      IsIndeterminate="{Binding FotoSelecionada.IsLoading}"
                                      VerticalAlignment="Bottom"
                                      Height="5"
                                      Visibility="{Binding FotoSelecionada.ShowProgress}"/>
+                            </Grid>
+
+                            <StackPanel Visibility="Visible">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="w: "/>
+                                    <TextBlock Text="{Binding FotoSelecionada.RenderedImageSize.Width}"/>
+                                    <TextBlock Text=" * "/>
+                                    <TextBlock Text="h: "/>
+                                    <TextBlock Text="{Binding FotoSelecionada.RenderedImageSize.Height}"/>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="w: "/>
+                                    <TextBlock Text="{Binding ImagemWidth}"/>
+                                    <TextBlock Text=" * "/>
+                                    <TextBlock Text="h: "/>
+                                    <TextBlock Text="{Binding ImagemHeight}"/>
+                                </StackPanel>
+                            </StackPanel>
+
                         </Grid>
-
-                        <StackPanel Visibility="Collapsed">
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="w: "/>
-                                <TextBlock Text="{Binding FotoSelecionada.RenderedImageSize.Width}"/>
-                                <TextBlock Text=" * "/>
-                                <TextBlock Text="h: "/>
-                                <TextBlock Text="{Binding FotoSelecionada.RenderedImageSize.Height}"/>
-                            </StackPanel>
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="w: "/>
-                                <TextBlock Text="{Binding ImagemWidth}"/>
-                                <TextBlock Text=" * "/>
-                                <TextBlock Text="h: "/>
-                                <TextBlock Text="{Binding ImagemHeight}"/>
-                            </StackPanel>
-                        </StackPanel>
-
                     </Grid>
+                    
 
 
 

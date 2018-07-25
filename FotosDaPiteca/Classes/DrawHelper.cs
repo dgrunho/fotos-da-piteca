@@ -54,6 +54,11 @@ namespace FotosDaPiteca.Classes.DrawTools
         uint dwFileOffsetHigh,
         uint dwFileOffsetLow,
         uint dwNumberOfBytesToMap);
+
+        [DllImport("kernel32", EntryPoint = "CloseHandle", SetLastError = true)]
+
+        private static extern bool CloseHandle(IntPtr handle);
+
         Graphics grRender;
         Graphics grFull;
 
@@ -63,30 +68,38 @@ namespace FotosDaPiteca.Classes.DrawTools
         {
             if (HasChanges)
             {
-                foreach (List<PointF> Ls in LstBig) {
-                    for (int i = 1; i <= Ls.Count - 1; i++) {
-                        int StepMultiplier = 1;
-                        if (zoomFactor >= 0.8)
-                        {
-                            StepMultiplier = 1;
-                        }
-                        else
-                        {
-                            StepMultiplier = 2;
-                        }
-                        
-                        ProcessPointsFull(Ls[i - 1], Ls[i], bmFull, false, 1, (float)_vm.ScaleX, (float)_vm.ScaleY, Step * StepMultiplier, grFull);
-                    }
-                }
+                _Foto.IsLoading = true;
 
-                using (MemoryStream msSave = new MemoryStream())
-                {
-                    bmFull.Save(msSave, System.Drawing.Imaging.ImageFormat.Bmp);
-                    _Foto.Image = msSave.ToArray();
-                }
+                    foreach (List<PointF> Ls in LstBig)
+                    {
+                        for (int i = 1; i <= Ls.Count - 1; i++)
+                        {
+                            int StepMultiplier = 1;
+                            if (zoomFactor >= 0.8)
+                            {
+                                StepMultiplier = 1;
+                            }
+                            else
+                            {
+                                StepMultiplier = 2;
+                            }
+
+                            ProcessPointsFull(Ls[i - 1], Ls[i], bmFull, false, 1, (float)_vm.ScaleX, (float)_vm.ScaleY, Step * StepMultiplier, grFull);
+                        }
+                    }
+
+                    using (MemoryStream msSave = new MemoryStream())
+                    {
+                        bmFull.Save(msSave, System.Drawing.Imaging.ImageFormat.Bmp);
+                        _Foto.Image = msSave.ToArray();
+                    }
+  
+                bmFull.Dispose();
+
             }
 
         }
+
 
         public void Destroy() {
             bmFull.Dispose();
@@ -213,7 +226,7 @@ namespace FotosDaPiteca.Classes.DrawTools
 
 
 
-
+        IntPtr sectionPointer;
         public void DrawRenderImage()
         {
             using (MemoryStream ms = new MemoryStream(_Foto.Image))
@@ -222,25 +235,27 @@ namespace FotosDaPiteca.Classes.DrawTools
                 {
 
                     UpdateZoom();
-                    SizeF ZoomedSize = new SizeF(bm.Width * zoomFactor, bm.Height * zoomFactor);
+                    Size ZoomedSize = new Size((int)(bm.Width * zoomFactor), (int)(bm.Height * zoomFactor));
+
+                    //Size ZoomedSize2 = new Size(bm.Width * zoomFactor, bm.Height * zoomFactor);
 
 
+                    
 
+                    uint byteCount = (uint)(ZoomedSize.Width * ZoomedSize.Width * bpp);
 
-                    uint byteCount = (uint)((int)ZoomedSize.Width * (int)ZoomedSize.Width * bpp);
-
-                    var sectionPointer = CreateFileMapping(new IntPtr(-1), IntPtr.Zero, PAGE_READWRITE, 0, byteCount, null);
+                    sectionPointer = CreateFileMapping(new IntPtr(-1), IntPtr.Zero, PAGE_READWRITE, 0, byteCount, null);
 
                     var mapPointer = MapViewOfFile(sectionPointer, FILE_MAP_ALL_ACCESS, 0, 0, byteCount);
 
                     var format = System.Windows.Media.PixelFormats.Bgr32;
 
-                    interopBitmap = System.Windows.Interop.Imaging.CreateBitmapSourceFromMemorySection(sectionPointer, (int)ZoomedSize.Width, (int)ZoomedSize.Height, format,
-                        (int)(ZoomedSize.Width * format.BitsPerPixel / 8), 0) as System.Windows.Interop.InteropBitmap;
+                    interopBitmap = System.Windows.Interop.Imaging.CreateBitmapSourceFromMemorySection(sectionPointer, ZoomedSize.Width, ZoomedSize.Height, format,
+                        (ZoomedSize.Width * format.BitsPerPixel / 8), 0) as System.Windows.Interop.InteropBitmap;
 
 
-                    bmRender = new Bitmap((int)ZoomedSize.Width, (int)ZoomedSize.Height,
-                                                (int)ZoomedSize.Width * bpp,
+                    bmRender = new Bitmap(ZoomedSize.Width, ZoomedSize.Height,
+                                                ZoomedSize.Width * bpp,
                                                  System.Drawing.Imaging.PixelFormat.Format32bppPArgb,
                                                 mapPointer);
                     grRender = Graphics.FromImage(bmRender);
@@ -255,7 +270,6 @@ namespace FotosDaPiteca.Classes.DrawTools
 
 
 
-
                     bmFull = new Bitmap((int)bm.Width, (int)bm.Height);
 
                     grFull = Graphics.FromImage(bmFull);
@@ -266,6 +280,8 @@ namespace FotosDaPiteca.Classes.DrawTools
                     grFull.DrawImage(bm, 0, 0, bm.Width, bm.Height);
 
                     interopBitmap.Invalidate();
+
+                    CloseHandle(sectionPointer);
                 }
 
             }

@@ -708,7 +708,7 @@ namespace FotosDaPiteca.ViewModel
             });
         }
 
-        void Update()
+        async void Update()
         {
             float ZoomFactor = Math.Min((float)ImagemWidth / (float)FotoSelecionada.ImageSize.Width, (float)ImagemHeight / (float)FotoSelecionada.ImageSize.Height);
             FotoSelecionada.RenderedImageSize = new Models.Size((int)(FotoSelecionada.ImageSize.Width * ZoomFactor), (int)(FotoSelecionada.ImageSize.Height * ZoomFactor));
@@ -721,6 +721,12 @@ namespace FotosDaPiteca.ViewModel
                     sdh = new Classes.DrawTools.SmudgeDrawHelper(ImagemDraw, FotoSelecionada, this);
                 }
                 else {
+
+                    //await Task.Factory.StartNew(() =>
+                    //{
+                    //    sdh.Save();
+                    //});
+                    //sdh = new Classes.DrawTools.SmudgeDrawHelper(ImagemDraw, FotoSelecionada, this);
                     sdh.DrawRenderImage();
                 }
             }

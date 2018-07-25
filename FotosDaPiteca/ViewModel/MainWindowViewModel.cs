@@ -708,7 +708,7 @@ namespace FotosDaPiteca.ViewModel
             });
         }
 
-        async void Update()
+        void Update()
         {
             float ZoomFactor = Math.Min((float)ImagemWidth / (float)FotoSelecionada.ImageSize.Width, (float)ImagemHeight / (float)FotoSelecionada.ImageSize.Height);
             FotoSelecionada.RenderedImageSize = new Models.Size((int)(FotoSelecionada.ImageSize.Width * ZoomFactor), (int)(FotoSelecionada.ImageSize.Height * ZoomFactor));

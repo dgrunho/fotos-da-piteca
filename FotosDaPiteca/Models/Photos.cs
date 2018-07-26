@@ -164,7 +164,6 @@ namespace FotosDaPiteca.Models
             }
         }
 
-
         Size _RenderedThumbSize = new Size(196, 140);
         public Size RenderedThumbSize
         {
@@ -542,8 +541,19 @@ namespace FotosDaPiteca.Models
 
         public void RenderImage(string FilePath)
         {
+            BitmapSource bmsFinal = PhotoHelper.RenderFinal(this, ImageSize.ToDrawingSize());
+            //PhotoHelper.ConvertFromBitmapSourceB(bmsFinal, FilePath);
+            using (MemoryStream ms = new MemoryStream(PhotoHelper.ConvertFromBitmapSourceBytes(bmsFinal)))
+            {
+                using (System.Drawing.Bitmap bmOut = new System.Drawing.Bitmap(ms))
+                {
+                    bmOut.Save(FilePath, System.Drawing.Imaging.ImageFormat.Jpeg);
+                }
+            }
+            //System.Drawing.Bitmap bmFinal = (System.Drawing.Bitmap)PhotoHelper.ConvertFromBitmapSource(bmsFinal).Clone();
+            //bmFinal.Save(FilePath, System.Drawing.Imaging.ImageFormat.Bmp);
 
-            //File.WriteAllBytes(FilePath, PhotoHelper.RenderFinal(this, ImageSize.ToDrawingSize()));
+            //File.WriteAllBytes(FilePath, PhotoHelper.ConvertFromBitmapSourceB(bmsFinal));
         }
 
         void RaisePropertyChanged(string prop)

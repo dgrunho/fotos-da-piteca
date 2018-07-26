@@ -83,8 +83,12 @@ namespace FotosDaPiteca.Classes
                                 PointF Posicao = GetTextDrawPosition((int)Foto.WatermarkPosition, new SizeF(bmFinal.Size.Width, bmFinal.Size.Height), s);
 
                                 if (Foto.AddShadow) {
+                                    if (Foto.RenderedImageSize.Width == 0) Foto.RenderedImageSize.Width = 1;
+                                    if (Foto.RenderedImageSize.Height == 0) Foto.RenderedImageSize.Height = 1;
 
-                                    using (Bitmap Blur = GetWatermarkShadow(Foto.Watermark, s, Color.FromArgb(100, Color.Black), new Font(Foto.WatermarkFont, RenderFontSize), Foto.ShadowRadius))
+                                    float zoomFactor = Math.Min(Foto.RenderedImageSize.Width / Foto.ImageSize.Width, Foto.RenderedImageSize.Height / Foto.ImageSize.Height);
+
+                                    using (Bitmap Blur = GetWatermarkShadow(Foto.Watermark, s, Color.FromArgb(100, Color.Black), new Font(Foto.WatermarkFont, RenderFontSize), Foto.ShadowRadius, zoomFactor))
                                     {
                                         if (Blur != null)
                                         {
@@ -112,7 +116,7 @@ namespace FotosDaPiteca.Classes
             }
         }
 
-        private static Bitmap GetWatermarkShadow(string Watermark, SizeF ShadowSize, Color WatermarkColor, Font WatermarkFont, int ShadowRadious)
+        private static Bitmap GetWatermarkShadow(string Watermark, SizeF ShadowSize, Color WatermarkColor, Font WatermarkFont, int ShadowRadious, float zoom)
         {
             if (ShadowSize.Width > 0 && ShadowSize.Height > 0)
             {
@@ -130,10 +134,10 @@ namespace FotosDaPiteca.Classes
                         GraphicsPath gp = new GraphicsPath();
                         float emSize = gr.DpiY * WatermarkFont.SizeInPoints / 72;
                         gp.AddString(Watermark, WatermarkFont.FontFamily, (int)WatermarkFont.Style, emSize, new RectangleF(5, 5, (float)((ShadowSize.Width - 5) * 5.25), ShadowSize.Height - 5), StringFormat.GenericDefault);
-                        gr.DrawPath(new Pen(WatermarkColor, 15), gp);
+                        gr.DrawPath(new Pen(WatermarkColor, 15 * zoom), gp);
                     }
                     var blur = new GaussianBlur(bmFinal as Bitmap);
-                    Bitmap result = blur.Process(ShadowRadious);
+                    Bitmap result = blur.Process((int)((float)ShadowRadious * zoom));
                     return result;
                 }
             }
@@ -190,6 +194,34 @@ namespace FotosDaPiteca.Classes
                 return bms;
             }
             finally { DeleteObject(handle); }
+        }
+
+        public static Bitmap ConvertFromBitmapSource(System.Windows.Media.Imaging.BitmapSource bitmapsource)
+        {
+            Bitmap bitmap;
+            using (var outStream = new MemoryStream())
+            {
+                System.Windows.Media.Imaging.BitmapEncoder enc = new System.Windows.Media.Imaging.BmpBitmapEncoder();
+                enc.Frames.Add(System.Windows.Media.Imaging.BitmapFrame.Create(bitmapsource));
+                enc.Save(outStream);
+                bitmap = new Bitmap(outStream);
+           
+            }
+            return bitmap;
+        }
+
+        public static byte[] ConvertFromBitmapSourceBytes(System.Windows.Media.Imaging.BitmapSource bitmapsource)
+        {
+            //Bitmap bitmap;
+            using (var outStream = new MemoryStream())
+            {
+                System.Windows.Media.Imaging.BitmapEncoder enc = new System.Windows.Media.Imaging.BmpBitmapEncoder();
+                enc.Frames.Add(System.Windows.Media.Imaging.BitmapFrame.Create(bitmapsource));
+                enc.Save(outStream);
+                //bitmap = new Bitmap(outStream);
+                return outStream.ToArray();
+            }
+         
         }
     }
 }

@@ -95,6 +95,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Classes\DrawHelper.cs" />
+    <Compile Include="Classes\NonRealTimeSlider.cs" />
     <Compile Include="Classes\PhotoHelper.cs" />
     <Compile Include="Converters\BooleanToVisibility.cs" />
     <Compile Include="Helpers\BitmapArray.cs" />

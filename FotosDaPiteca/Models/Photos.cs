@@ -369,6 +369,61 @@ namespace FotosDaPiteca.Models
             }
         }
 
+        int _Brightness = 0;
+        public int Brightness
+        {
+            get
+            {
+                return _Brightness;
+            }
+            set
+            {
+                if (_Brightness != value)
+                {
+                    _Brightness = value;
+                    RaisePropertyChanged("Brightness");
+                    RenderImage();
+                }
+            }
+        }
+
+        int _Gamma = 0;
+        public int Gamma
+        {
+            get
+            {
+                return _Gamma;
+            }
+            set
+            {
+                if (_Gamma != value)
+                {
+                    _Gamma = value;
+                    RaisePropertyChanged("Gamma");
+                    RenderImage();
+                }
+            }
+        }
+
+        bool _Normalize = false;
+        public bool Normalize
+        {
+            get
+            {
+                return _Normalize;
+            }
+            set
+            {
+                if (_Normalize != value)
+                {
+                    _Normalize = value;
+                    RaisePropertyChanged("Normalize");
+                    RenderImage();
+                }
+            }
+        }
+
+
         byte _RedBalance = 255;
         public byte RedBalance
         {

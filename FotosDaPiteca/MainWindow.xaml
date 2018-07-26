@@ -11,6 +11,7 @@
         xmlns:helpers="clr-namespace:FotosDaPiteca.Helpers"   
         xmlns:Fotos="clr-namespace:FotosDaPiteca.Models"  
         xmlns:System="clr-namespace:System;assembly=mscorlib"
+                      xmlns:Classes="clr-namespace:FotosDaPiteca.Classes"
         mc:Ignorable="d"
         Height="600" Width="800"
         TextElement.Foreground="{DynamicResource MaterialDesignBody}"
@@ -253,8 +254,23 @@
                                                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                                                         <StackPanel Orientation="Horizontal">
                                                             <materialDesign:PackIcon Kind="ContrastBox" Foreground="{DynamicResource MaterialDesignBody}" Width="24" Height="24" />
-                                                            <TextBlock Text="{Binding FotoSelecionada.Contrast}" FontWeight="Bold" Foreground="{DynamicResource MaterialDesignBody}" VerticalAlignment="Center"/>
-                                                            <TextBlock Text="%" FontWeight="Bold" Foreground="{DynamicResource MaterialDesignBody}" VerticalAlignment="Center"/>
+                                                            <StackPanel VerticalAlignment="Center">
+                                                                <StackPanel Orientation="Horizontal">
+                                                                    <TextBlock Text="C: " Width="7" FontSize="6" Foreground="{DynamicResource MaterialDesignBody}"/>
+                                                                    <TextBlock Text="{Binding FotoSelecionada.Contrast}" FontSize="6" FontWeight="Bold" Foreground="{DynamicResource MaterialDesignBody}"/>
+                                                                    <TextBlock Text="%" FontSize="6" Foreground="{DynamicResource MaterialDesignBody}"/>
+                                                                </StackPanel>
+                                                                <StackPanel Orientation="Horizontal">
+                                                                    <TextBlock Text="L: " Width="7" FontSize="6" Foreground="{DynamicResource MaterialDesignBody}"/>
+                                                                    <TextBlock Text="{Binding FotoSelecionada.Brightness}" FontSize="6" FontWeight="Bold" Foreground="{DynamicResource MaterialDesignBody}"/>
+                                                                    <TextBlock Text="%" FontSize="6" Foreground="{DynamicResource MaterialDesignBody}"/>
+                                                                </StackPanel>
+                                                                <StackPanel Orientation="Horizontal">
+                                                                    <TextBlock Text="G: " Width="7" FontSize="6" Foreground="{DynamicResource MaterialDesignBody}"/>
+                                                                    <TextBlock Text="{Binding FotoSelecionada.Gamma}" FontSize="6" FontWeight="Bold" Foreground="{DynamicResource MaterialDesignBody}"/>
+                                                                    <TextBlock Text="%" FontSize="6" Foreground="{DynamicResource MaterialDesignBody}"/>
+                                                                </StackPanel>
+                                                            </StackPanel>
                                                         </StackPanel>
                                                     </StackPanel>
                                                     <Path Width="8" Height="8"
@@ -267,13 +283,41 @@
                                                 </StackPanel>
 
                                             </materialDesign:PopupBox.ToggleContent>
-                                            <StackPanel Margin="10">
-                                                <Slider Grid.Column="1"
-                                        Minimum="-100"
-                                        Maximum="100"
-                                        Style="{StaticResource MaterialDesignDiscreteSlider}"
-                                        Value="{Binding FotoSelecionada.Contrast}" />
-                                            </StackPanel>
+                                            <Grid Margin="10">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition Height="Auto"/>
+                                                    <RowDefinition Height="Auto"/>
+                                                    <RowDefinition Height="Auto"/>
+                                                    <RowDefinition Height="Auto"/>
+                                                </Grid.RowDefinitions>
+
+                                                <TextBlock Text="Contraste" Grid.Row="0" Grid.Column="0" VerticalAlignment="Bottom"/>
+                                                <Classes:NonRealtimeSlider Grid.Row="0" Grid.Column="1" Minimum="-100" Maximum="200" Width="200"
+                                                            Style="{StaticResource MaterialDesignDiscreteSlider}"
+                                                            Value="{Binding FotoSelecionada.Contrast}" />
+
+                                                <TextBlock Text="Luminosidade" Grid.Row="1" Grid.Column="0" VerticalAlignment="Bottom"/>
+                                                <Classes:NonRealtimeSlider Grid.Row="1" Grid.Column="1" Minimum="-100" Maximum="100" Width="200"
+                                                            Style="{StaticResource MaterialDesignDiscreteSlider}"
+                                                            Value="{Binding FotoSelecionada.Brightness}" />
+
+                                                <TextBlock Text="Gamma" Grid.Row="2" Grid.Column="0" VerticalAlignment="Bottom"/>
+                                                <Classes:NonRealtimeSlider Grid.Row="2" Grid.Column="1" Minimum="-100" Maximum="100" Width="200"
+                                                            Style="{StaticResource MaterialDesignDiscreteSlider}"
+                                                            Value="{Binding FotoSelecionada.Gamma}" />
+                                                <CheckBox Grid.Row="3" Grid.Column="0" 
+                                                          Grid.ColumnSpan="2" 
+                                                          IsChecked="{Binding FotoSelecionada.Normalize}"
+                                                          Style="{StaticResource MaterialDesignCheckBox}"
+                                                          Visibility="Collapsed">
+                                                    Normalizar Brilho
+                                                </CheckBox>
+                                            </Grid>
+                                            
                                         </materialDesign:PopupBox>
                                         <Border Margin="0,8,0,8" BorderThickness="1 0 0 0" BorderBrush="{DynamicResource MaterialDesignDivider}"/>
                                     </StackPanel>
@@ -323,6 +367,7 @@
                                                 <Slider Grid.Column="1"
                                         Minimum="0"
                                         Maximum="255"
+                                                        Width="200"
                                         Style="{StaticResource MaterialDesignDiscreteSlider}"
                                         Value="{Binding FotoSelecionada.RedBalance}" />
                                             </Grid>
@@ -335,6 +380,7 @@
                                                 <Slider Grid.Column="1"
                                         Minimum="0"
                                         Maximum="255"
+                                                        Width="200"
                                         Style="{StaticResource MaterialDesignDiscreteSlider}"
                                         Value="{Binding FotoSelecionada.GreenBalance}" />
                                             </Grid>
@@ -347,6 +393,7 @@
                                                 <Slider Grid.Column="1"
                                         Minimum="0"
                                         Maximum="255"
+                                                        Width="200"
                                         Style="{StaticResource MaterialDesignDiscreteSlider}"
                                         Value="{Binding FotoSelecionada.BlueBalance}" />
                                             </Grid>

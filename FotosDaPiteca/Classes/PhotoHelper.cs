@@ -50,10 +50,13 @@ namespace FotosDaPiteca.Classes
                     {
                         bm = Effects.ColorBalance.SetImageColorBalance(bm, Foto.RedBalance, Foto.GreenBalance, Foto.BlueBalance);
                     }
+
+                    bm = Effects.ColorCorrections.SetImageBrightnessContrastGamma(bm, ((float)(Foto.Brightness) / 100) + 1f, ((float)(Foto.Contrast) / 100) + 1f, ((float)(Foto.Gamma) / 100) + 1f);
                         
-                    if (Foto.Contrast != 0)
+                    if (Foto.Normalize)
                     {
-                        bm = Effects.Contrast.SetImageContrast(bm, Foto.Contrast);
+                        bm = Effects.ColorCorrections.NormalizeImageBrightness(bm);
+                        //bm = Effects.Contrast.SetImageContrast(bm, Foto.Contrast);
                     }
                     
                     using (Bitmap bmFinal = new Bitmap((int)ZoomedSize.Width, (int)ZoomedSize.Height))

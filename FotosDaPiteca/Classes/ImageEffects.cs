@@ -6,6 +6,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using FotosDaPiteca.Helpers;
 
 namespace FotosDaPiteca.Effects
 {
@@ -214,69 +215,152 @@ namespace FotosDaPiteca.Effects
         }
     }
 
-    class Contrast
+    class ColorCorrections
     {
-        public static Bitmap SetImageContrast(Bitmap sourceBitmap, int threshold)
+
+
+        private const float MIN_BRIGHTNESS = 0;
+        private const float MAX_BRIGHTNESS = 1;
+
+        public static Bitmap NormalizeImageBrightness(Bitmap image)
         {
+            //Rever Codigo Funciona mal
+            float minBrightness = MAX_BRIGHTNESS;
+            float maxBrightness = MIN_BRIGHTNESS;
 
-
-            BitmapData sourceData = sourceBitmap.LockBits(new Rectangle(0, 0,
-                                        sourceBitmap.Width, sourceBitmap.Height),
-                                        ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
-
-            byte[] pixelBuffer = new byte[sourceData.Stride * sourceData.Height];
-
-            Marshal.Copy(sourceData.Scan0, pixelBuffer, 0, pixelBuffer.Length);
-
-            sourceBitmap.UnlockBits(sourceData);
-
-            double contrastLevel = Math.Pow((100.0 + threshold) / 100.0, 2);
-
-            double blue = 0;
-            double green = 0;
-            double red = 0;
-
-            for (int k = 0; k + 4 < pixelBuffer.Length; k += 4)
+            /* Get the brightness range of the image. */
+            for (int x = 0; x < image.Width; x++)
             {
-                blue = ((((pixelBuffer[k] / 255.0) - 0.5) *
-                           contrastLevel) + 0.5) * 255.0;
-
-                green = ((((pixelBuffer[k + 1] / 255.0) - 0.5) *
-                            contrastLevel) + 0.5) * 255.0;
-
-                red = ((((pixelBuffer[k + 2] / 255.0) - 0.5) *
-                           contrastLevel) + 0.5) * 255.0;
-
-                if (blue > 255)
-                { blue = 255; }
-                else if (blue < 0)
-                { blue = 0; }
-
-                if (green > 255)
-                { green = 255; }
-                else if (green < 0)
-                { green = 0; }
-
-                if (red > 255)
-                { red = 255; }
-                else if (red < 0)
-                { red = 0; }
-
-                pixelBuffer[k] = (byte)blue;
-                pixelBuffer[k + 1] = (byte)green;
-                pixelBuffer[k + 2] = (byte)red;
+                for (int y = 0; y < image.Height; y++)
+                {
+                    float pixelBrightness = image.GetPixel(x, y).GetBrightness();
+                    minBrightness = Math.Min(minBrightness, pixelBrightness);
+                    maxBrightness = Math.Max(maxBrightness, pixelBrightness);
+                }
             }
 
-            Bitmap resultBitmap = new Bitmap(sourceBitmap.Width, sourceBitmap.Height);
+            /* Normalize the image brightness. */
+            for (int x = 0; x < image.Width; x++)
+            {
+                for (int y = 0; y < image.Height; y++)
+                {
+                    Color pixelColor = image.GetPixel(x, y);
+                    float normalizedPixelBrightness = (pixelColor.GetBrightness() - minBrightness) / (maxBrightness - minBrightness);
+                    Color normalizedPixelColor =
+                    ColorConverter.ColorFromAhsb(pixelColor.A, pixelColor.GetHue(),
+                    pixelColor.GetSaturation(), normalizedPixelBrightness);
+                    image.SetPixel(x, y, normalizedPixelColor);
+                }
+            }
+            return image;
+        }
 
-            BitmapData resultData = resultBitmap.LockBits(new Rectangle(0, 0,
-                                        resultBitmap.Width, resultBitmap.Height),
-                                        ImageLockMode.WriteOnly, PixelFormat.Format32bppArgb);
+        class ColorConverter
+        {
+            public static Color ColorFromAhsb(int a, float h, float s, float b)
+            {
+                if (0 > a || 255 < a)
+                {
+                    throw new Exception("a");
+                }
+                if (0f > h || 360f < h)
+                {
+                    throw new Exception("h");
+                }
+                if (0f > s || 1f < s)
+                {
+                    throw new Exception("s");
+                }
+                if (0f > b || 1f < b)
+                {
+                    throw new Exception("b");
+                }
 
-            Marshal.Copy(pixelBuffer, 0, resultData.Scan0, pixelBuffer.Length);
-            resultBitmap.UnlockBits(resultData);
+                if (0 == s)
+                {
+                    return Color.FromArgb(a, Convert.ToInt32(b * 255),
+                      Convert.ToInt32(b * 255), Convert.ToInt32(b * 255));
+                }
 
-            return resultBitmap;
+                float fMax, fMid, fMin;
+                int iSextant, iMax, iMid, iMin;
+
+                if (0.5 < b)
+                {
+                    fMax = b - (b * s) + s;
+                    fMin = b + (b * s) - s;
+                }
+                else
+                {
+                    fMax = b + (b * s);
+                    fMin = b - (b * s);
+                }
+
+                iSextant = (int)Math.Floor(h / 60f);
+                if (300f <= h)
+                {
+                    h -= 360f;
+                }
+                h /= 60f;
+                h -= 2f * (float)Math.Floor(((iSextant + 1f) % 6f) / 2f);
+                if (0 == iSextant % 2)
+                {
+                    fMid = h * (fMax - fMin) + fMin;
+                }
+                else
+                {
+                    fMid = fMin - h * (fMax - fMin);
+                }
+
+                iMax = Convert.ToInt32(fMax * 255);
+                iMid = Convert.ToInt32(fMid * 255);
+                iMin = Convert.ToInt32(fMin * 255);
+
+                switch (iSextant)
+                {
+                    case 1:
+                        return Color.FromArgb(a, iMid, iMax, iMin);
+                    case 2:
+                        return Color.FromArgb(a, iMin, iMax, iMid);
+                    case 3:
+                        return Color.FromArgb(a, iMin, iMid, iMax);
+                    case 4:
+                        return Color.FromArgb(a, iMid, iMin, iMax);
+                    case 5:
+                        return Color.FromArgb(a, iMax, iMin, iMid);
+                    default:
+                        return Color.FromArgb(a, iMax, iMid, iMin);
+                }
+            }
+        }
+
+
+        public static Bitmap SetImageBrightnessContrastGamma(Bitmap bm, float brightness, float contrast, float gamma)
+        {
+            Bitmap bmResult = new Bitmap(bm.Width, bm.Height);
+            //float brightness = 1.0f; // no change in brightness
+            //float contrast = 2.0f; // twice the contrast
+            //float gamma = 1.0f; // no change in gamma
+
+            float adjustedBrightness = brightness - 1.0f;
+            // create matrix that will brighten and contrast the image
+            float[][] ptsArray ={
+                                new float[] {contrast, 0, 0, 0, 0}, // scale red
+                                new float[] {0, contrast, 0, 0, 0}, // scale green
+                                new float[] {0, 0, contrast, 0, 0}, // scale blue
+                                new float[] {0, 0, 0, 1.0f, 0}, // don't scale alpha
+                                new float[] {adjustedBrightness, adjustedBrightness, adjustedBrightness, 0, 1}};
+
+            ImageAttributes imageAttributes = new ImageAttributes();
+            imageAttributes.ClearColorMatrix();
+            imageAttributes.SetColorMatrix(new ColorMatrix(ptsArray), ColorMatrixFlag.Default, ColorAdjustType.Bitmap);
+            imageAttributes.SetGamma(gamma, ColorAdjustType.Bitmap);
+            Graphics g = Graphics.FromImage(bmResult);
+            g.Clear(Color.White);
+            g.DrawImage(bm, new Rectangle(0, 0, bmResult.Width, bmResult.Height)
+                , 0, 0, bm.Width, bm.Height,
+                GraphicsUnit.Pixel, imageAttributes);
+            return bmResult;
         }
     }
 

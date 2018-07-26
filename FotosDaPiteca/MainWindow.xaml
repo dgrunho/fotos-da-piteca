@@ -554,7 +554,7 @@
                                      Visibility="{Binding FotoSelecionada.ShowProgress}"/>
                             </Grid>
 
-                            <StackPanel Visibility="Visible">
+                            <StackPanel Visibility="Collapsed">
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock Text="w: "/>
                                     <TextBlock Text="{Binding FotoSelecionada.RenderedImageSize.Width}"/>

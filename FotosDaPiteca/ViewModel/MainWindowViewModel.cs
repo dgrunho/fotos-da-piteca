@@ -26,6 +26,22 @@ namespace FotosDaPiteca.ViewModel
     class MainWindowViewModel : ViewModelBase
 
     {
+        #region Enums
+        public enum Tools
+        {
+            [Description("Select")]
+            Select = 0,
+            [Description("Smudge")]
+            Smudge = 1,
+            [Description("Contrast, Brightness & Gamma")]
+            ContrastBrightnessGamma = 2,
+            [Description("Color Levels")]
+            ColorLevels = 3,
+            [Description("Crop")]
+            Crop = 4
+        }
+        #endregion
+
         #region "Variables"
         Classes.DrawTools.SmudgeDrawHelper sdh;
         #endregion
@@ -141,7 +157,7 @@ namespace FotosDaPiteca.ViewModel
                 {
                     _FotoSelecionada = value;
                     RaisePropertyChanged("FotoSelecionada");
-                    SelectedToolIndex = 0;
+                    SelectedToolIndex = (int)Tools.Select;
                     
                     if (FotoSelecionada != null) {
                         
@@ -308,14 +324,26 @@ namespace FotosDaPiteca.ViewModel
                     _SelectedToolIndex = value;
                     
                     RaisePropertyChanged("SelectedToolIndex");
-                    if (_SelectedToolIndex == 1)
+                    switch (_SelectedToolIndex)
                     {
-                        sdh = null;
-                        Update();
+                        case (int)Tools.Smudge: 
+                            sdh = null;
+                            Update();
+                            ShowRectangleTool = Visibility.Collapsed;
+                            break;
+                        case (int)Tools.Crop:
+                            RectangleTop = new Point(0, 0);
+                            RectangleBottom = new Point(ImagemDraw.ActualWidth, ImagemDraw.ActualHeight);
+
+                            RectangleTool = new Rect(RectangleTop, RectangleBottom);
+                            ShowRectangleTool = Visibility.Visible;
+                            break;
+                        default:
+                            ShowRectangleTool = Visibility.Collapsed;
+                            if (sdh != null) sdh.Save();
+                            break;
                     }
-                    else {
-                        if (sdh != null) sdh.Save();
-                    }
+                    
                 }
             }
         }
@@ -426,19 +454,87 @@ namespace FotosDaPiteca.ViewModel
             }
         }
 
-        Visibility _ShowTool = Visibility.Collapsed;
-        public Visibility ShowTool
+        Visibility _ShowCircleTool = Visibility.Collapsed;
+        public Visibility ShowCircleTool
         {
             get
             {
-                return _ShowTool;
+                return _ShowCircleTool;
             }
             set
             {
-                if (_ShowTool != value)
+                if (_ShowCircleTool != value)
                 {
-                    _ShowTool = value;
-                    RaisePropertyChanged("ShowTool");
+                    _ShowCircleTool = value;
+                    RaisePropertyChanged("ShowCircleTool");
+                }
+            }
+        }
+
+        Rect _RectangleTool;
+        public Rect RectangleTool
+        {
+            get
+            {
+                return _RectangleTool;
+            }
+            set
+            {
+                if (_RectangleTool != value)
+                {
+                    _RectangleTool = value;
+                    RaisePropertyChanged("RectangleTool");
+                }
+            }
+        }
+
+        Point _RectangleTop;
+        public Point RectangleTop
+        {
+            get
+            {
+                return _RectangleTop;
+            }
+            set
+            {
+                if (_RectangleTop != value)
+                {
+                    _RectangleTop = value;
+                    RaisePropertyChanged("RectangleTop");
+                }
+            }
+        }
+
+        Point _RectangleBottom;
+        public Point RectangleBottom
+        {
+            get
+            {
+                return _RectangleBottom;
+            }
+            set
+            {
+                if (_RectangleBottom != value)
+                {
+                    _RectangleBottom = value;
+                    RaisePropertyChanged("RectangleBottom");
+                }
+            }
+        }
+
+        Visibility _ShowRectangleTool = Visibility.Collapsed;
+        public Visibility ShowRectangleTool
+        {
+            get
+            {
+                return _ShowRectangleTool;
+            }
+            set
+            {
+                if (_ShowRectangleTool != value)
+                {
+                    _ShowRectangleTool = value;
+                    RaisePropertyChanged("ShowRectangleTool");
                 }
             }
         }
@@ -585,6 +681,16 @@ namespace FotosDaPiteca.ViewModel
             Exportar();
         });
 
+        public RelayCommand CropRectangle => new RelayCommand(delegate (object o)
+        {
+            FotoSelecionada.CropImage(RectangleTool, (float)ScaleX, (float)ScaleY);
+            
+            Update();
+            RectangleTop = new Point(0, 0);
+            RectangleBottom = new Point(FotoSelecionada.RenderedImageSize.Width, FotoSelecionada.RenderedImageSize.Height);
+            RectangleTool = new Rect(RectangleTop, RectangleBottom);
+        });
+
 
         #endregion
 
@@ -716,7 +822,7 @@ namespace FotosDaPiteca.ViewModel
             FotoSelecionada.RenderedImageSize = new Models.Size((int)(FotoSelecionada.ImageSize.Width * ZoomFactor), (int)(FotoSelecionada.ImageSize.Height * ZoomFactor));
             ToolSizeDisplay = ToolSize * ZoomFactor;
 
-            if (SelectedToolIndex == 1)
+            if (SelectedToolIndex == (int)Tools.Smudge)
             {
                 if (sdh == null)
                 {

@@ -180,6 +180,41 @@ namespace FotosDaPiteca.Classes
 
         }
 
+        public static byte[] CropImage(FotosDaPiteca.Models.Photo Foto, RectangleF rectangle)
+        {
+
+            using (MemoryStream ms = new MemoryStream(Foto.Image))
+            {
+                using (Bitmap bmOriginal = new Bitmap(ms))
+                {
+                    Bitmap bm = (Bitmap)bmOriginal.Clone();
+
+                    float ZoomFactor = Math.Min((float)Foto.RenderedImageSize.Width / (float)bm.Width, (float)Foto.RenderedImageSize.Height / (float)bm.Height);
+
+                    RectangleF ZoomedRectangle = new RectangleF(rectangle.X / ZoomFactor, rectangle.Y / ZoomFactor, rectangle.Width / ZoomFactor, rectangle.Height / ZoomFactor);
+
+
+
+                    using (Bitmap bmFinal = new Bitmap((int)ZoomedRectangle.Width, (int)ZoomedRectangle.Height))
+                    {
+                        using (Graphics gr = Graphics.FromImage(bmFinal))
+                        {
+                            gr.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+                            gr.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.HighQuality;
+                            gr.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+                            gr.DrawImage(bm, -ZoomedRectangle.X , -ZoomedRectangle.Y, bm.Width, bm.Height);
+                        }
+                        using (MemoryStream msSave = new MemoryStream())
+                        {
+                            bmFinal.Save(msSave, System.Drawing.Imaging.ImageFormat.Bmp);
+                            return msSave.ToArray();
+                        }
+                    }
+
+                }
+            }
+        }
+
 
         [DllImport("gdi32.dll", EntryPoint = "DeleteObject")]
         [return: MarshalAs(UnmanagedType.Bool)]

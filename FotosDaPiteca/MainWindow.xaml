@@ -33,6 +33,7 @@
                 <x:Type TypeName="Fotos:Posicoes"/>
             </ObjectDataProvider.MethodParameters>
         </ObjectDataProvider>
+        <SolidColorBrush x:Key="CropFillBrush" Color="#66FF0000"/>
     </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
@@ -402,6 +403,12 @@
 
 
                                 </ListBoxItem>
+                                <ListBoxItem Padding="8,8,0,8">
+                                    <StackPanel Orientation="Horizontal">
+                                        <materialDesign:PackIcon Margin="0,0,5,0" Kind="Crop" Width="24" Height="24" />
+                                        <Border Margin="0,0,0,0" BorderThickness="1 0 0 0" BorderBrush="{DynamicResource MaterialDesignDivider}"/>
+                                    </StackPanel>
+                                </ListBoxItem>
                             </ListBox>
                             <Border Margin="0 16 0 8" BorderThickness="0 1 0 0" BorderBrush="{DynamicResource MaterialDesignDivider}"/>
                             <StackPanel >
@@ -533,19 +540,113 @@
                                    MouseUp="ImgBig_MouseUp"/>
 
 
-                                <Canvas HorizontalAlignment="Stretch"
+                                <Canvas x:Name="cvTools" HorizontalAlignment="Stretch"
                                     VerticalAlignment="Stretch"
                                     ClipToBounds="True">
 
                                     <Ellipse Canvas.Top="{Binding CircleCenter.Y}" 
                                          Canvas.Left="{Binding CircleCenter.X}" 
-                                         Visibility="{Binding ShowTool}"
+                                         Visibility="{Binding ShowCircleTool}"
                                          StrokeThickness="2" 
                                          Stroke="Red"
                                          Width="{Binding ToolSizeDisplay}" 
                                          Height="{Binding ToolSizeDisplay}" />
-                                </Canvas>
+                                    <Canvas Visibility="{Binding ShowRectangleTool}"
+                                          Width="{Binding Path=ActualWidth, ElementName=cvTools}"
+                                          Height="{Binding Path=ActualHeight, ElementName=cvTools}">
+                                        <!--Isto está assim porque eu fui preguiçoso demais para por a OpacityMask a trabalhar-->
+                                        <Rectangle Canvas.Top="0"
+                                                   Canvas.Left="0"
+                                                   Width="{Binding RectangleTool.Left}"
+                                                   Height="{Binding Path=ActualHeight, ElementName=cvTools}"
+                                                   Fill="{StaticResource CropFillBrush}"
+                                                   IsHitTestVisible="False"/>
+                                        <Rectangle Canvas.Top="0"
+                                                   Canvas.Left="{Binding RectangleTool.Left}"
+                                                   Width="{Binding Path=ActualWidth, ElementName=cvTools}"
+                                                   Height="{Binding RectangleTool.Top}"
+                                                   Fill="{StaticResource CropFillBrush}"
+                                                   IsHitTestVisible="False"/>
+                                        <Rectangle Canvas.Top="{Binding RectangleTool.Top}"
+                                                   Canvas.Left="{Binding RectangleTool.Right}"
+                                                   Width="{Binding Path=ActualWidth, ElementName=cvTools}"
+                                                   Height="{Binding Path=ActualHeight, ElementName=cvTools}"
+                                                   Fill="{StaticResource CropFillBrush}"
+                                                   IsHitTestVisible="False"/>
+                                        <Rectangle Canvas.Top="{Binding RectangleTool.Bottom}"
+                                                   Canvas.Left="{Binding RectangleTool.Left}"
+                                                   Width="{Binding RectangleTool.Width}"
+                                                   Height="{Binding Path=ActualHeight, ElementName=cvTools}"
+                                                   Fill="{StaticResource CropFillBrush}"
+                                                   IsHitTestVisible="False"/>
+                                        <Grid Canvas.Top="{Binding RectangleTool.Top}" 
+                                          Canvas.Left="{Binding RectangleTool.Left}"
+                                          Width="{Binding RectangleTool.Width}"
+                                          Height="{Binding RectangleTool.Height}"
+                                          Visibility="{Binding ShowRectangleTool}"
+                                          >
+                                        <Border BorderBrush="Red" 
+                                                BorderThickness="2"
+                                                />
+                                        <Border x:Name="brdTopLeft" 
+                                                BorderBrush="Black" 
+                                                BorderThickness="1" 
+                                                Background="White"
+                                                Width="10"
+                                                Height="10"
+                                                VerticalAlignment="Top"
+                                                HorizontalAlignment="Left"
+                                                Cursor="Hand"
+                                                MouseEnter="brdTopLeft_MouseEnter"/>
+                                        <Border x:Name="brdTopRight" 
+                                                BorderBrush="Black" 
+                                                BorderThickness="1" 
+                                                Background="White"
+                                                Width="10"
+                                                Height="10"
+                                                VerticalAlignment="Top"
+                                                HorizontalAlignment="Right"
+                                                Cursor="Hand"
+                                                MouseEnter="brdTopLeft_MouseEnter"/>
+                                        <Border x:Name="brdBottomRight" 
+                                                BorderBrush="Black" 
+                                                BorderThickness="1" 
+                                                Background="White"
+                                                Width="10"
+                                                Height="10"
+                                                VerticalAlignment="Bottom"
+                                                HorizontalAlignment="Right"
+                                                Cursor="Hand"
+                                                MouseEnter="brdTopLeft_MouseEnter"/>
+                                        <Border x:Name="brdBottomLeft" 
+                                                BorderBrush="Black" 
+                                                BorderThickness="1" 
+                                                Background="White"
+                                                Width="10"
+                                                Height="10"
+                                                VerticalAlignment="Bottom"
+                                                HorizontalAlignment="Left"
+                                                Cursor="Hand"
+                                                MouseEnter="brdTopLeft_MouseEnter"/>
 
+                                            <Button VerticalAlignment="Center" HorizontalAlignment="Center" 
+                                                    Command="{Binding Path=DataContext.CropRectangle, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:MainWindow}}}" 
+                                                    Margin="0,0,0,0"
+                                                    Style="{StaticResource MaterialDesignRaisedAccentButton}">
+                                                <Grid>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="30"/>
+                                                        <ColumnDefinition Width="*"/>
+                                                    </Grid.ColumnDefinitions>
+                                                    <materialDesign:PackIcon Kind="Crop" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                                    <TextBlock Grid.Column="1" Text="Cortar" VerticalAlignment="Center" />
+                                                </Grid>
+                                            </Button>
+                                        </Grid>
+                                    </Canvas>
+                                    
+                                    
+                                </Canvas>
 
                                 <ProgressBar Value="50"
                                      IsIndeterminate="{Binding FotoSelecionada.IsLoading}"

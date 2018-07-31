@@ -556,6 +556,20 @@ namespace FotosDaPiteca.Models
             //File.WriteAllBytes(FilePath, PhotoHelper.ConvertFromBitmapSourceB(bmsFinal));
         }
 
+        async public void CropImage(System.Windows.Rect rect, float ScaleX, float ScaleY)
+        {
+            if (Image != null)
+            {
+                IsLoading = true;
+                await Task.Factory.StartNew(() =>
+                {
+                    Image = PhotoHelper.CropImage(this, new System.Drawing.RectangleF((float)rect.X * ScaleX, (float)rect.Y * ScaleX, (float)rect.Width * ScaleX, (float)rect.Height * ScaleX));
+                });
+                IsLoading = false;
+            }
+
+        }
+
         void RaisePropertyChanged(string prop)
         {
             if (PropertyChanged != null) { PropertyChanged(this, new PropertyChangedEventArgs(prop)); }

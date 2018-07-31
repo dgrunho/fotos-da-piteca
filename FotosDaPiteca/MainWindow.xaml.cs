@@ -21,6 +21,7 @@ namespace FotosDaPiteca
     public partial class MainWindow : MahApps.Metro.Controls.MetroWindow
     {
         ViewModel.MainWindowViewModel vm;
+        Border currSquare;
 
         public MainWindow()
         {
@@ -32,11 +33,6 @@ namespace FotosDaPiteca
         private void SairButton_Click(object sender, RoutedEventArgs e)
         {
             Environment.Exit(1);
-        }
-
-        private void ImgBig_SizeChanged(object sender, SizeChangedEventArgs e)
-        {
-            
         }
 
         private void MetroWindow_Loaded(object sender, RoutedEventArgs e)
@@ -64,45 +60,79 @@ namespace FotosDaPiteca
                     vm.FotoSelecionada = null;
                 }
                 vm.Fotos.Remove((FotosDaPiteca.Models.Photo)btn.DataContext);
-
             }
-
         }
 
         private void ImgBig_MouseMove(object sender, MouseEventArgs e)
         {
-            //ViewModel.MainWindowViewModel vm = (ViewModel.MainWindowViewModel)DataContext;
-            if (vm.SelectedToolIndex == 1)
+            var point = e.GetPosition((IInputElement)sender);
+            float ZoomFactor = Math.Min((float)vm.FotoSelecionada.RenderedImageSize.Width / (float)vm.FotoSelecionada.ImageSize.Width, (float)vm.FotoSelecionada.RenderedImageSize.Height / (float)vm.FotoSelecionada.ImageSize.Height);
+
+            vm.CurrPoint = point;
+
+            switch (vm.SelectedToolIndex)
             {
-                var point = e.GetPosition((Image)sender);
+                case (int)FotosDaPiteca.ViewModel.MainWindowViewModel.Tools.Smudge:
+                    vm.CircleCenter = new Point(point.X - (vm.ToolSizeDisplay / 2), point.Y - (vm.ToolSizeDisplay / 2));
+                    break;
+                case (int)FotosDaPiteca.ViewModel.MainWindowViewModel.Tools.Crop:
+                    if (e.LeftButton == MouseButtonState.Pressed)
+                    {
+                        Point PointTL = vm.RectangleTool.TopLeft;
+                        Point PointBR = vm.RectangleTool.BottomRight;
+                        if (currSquare == brdTopLeft)
+                        {
+                            vm.RectangleTool = new Rect(new Point(point.X, point.Y), new Point(PointBR.X, PointBR.Y));
+                        }
 
-                float ZoomFactor = Math.Min((float)vm.FotoSelecionada.RenderedImageSize.Width / (float)vm.FotoSelecionada.ImageSize.Width, (float)vm.FotoSelecionada.RenderedImageSize.Height / (float)vm.FotoSelecionada.ImageSize.Height);
-
-                vm.CurrPoint = point;
-                vm.CircleCenter = new Point(point.X - (vm.ToolSizeDisplay / 2), point.Y - (vm.ToolSizeDisplay / 2));
+                        if (currSquare == brdTopRight)
+                        {
+                            vm.RectangleTool = new Rect(new Point(PointTL.X, point.Y), new Point(point.X, PointBR.Y));
+                        }
+                        if (currSquare == brdBottomRight)
+                        {
+                            vm.RectangleTool = new Rect(new Point(PointTL.X, PointTL.Y), new Point(point.X, point.Y));
+                        }
+                        if (currSquare == brdBottomLeft)
+                        {
+                            vm.RectangleTool = new Rect(new Point(point.X, PointTL.Y), new Point(PointBR.X, point.Y));
+                        }
+                    }
+                    else currSquare = null;
+                    break;
+                default:
+                    break;
             }
-            
         }
 
         private void ImgBig_MouseEnter(object sender, MouseEventArgs e)
         {
             //ViewModel.MainWindowViewModel vm = (ViewModel.MainWindowViewModel)DataContext;
-            if (vm.SelectedToolIndex == 1)
+
+
+            switch (vm.SelectedToolIndex)
             {
-                Mouse.OverrideCursor = Cursors.Hand;
-                vm.ShowTool = Visibility.Visible;
-            }
-            else
-            {
-                Mouse.OverrideCursor = Cursors.Arrow;
-                vm.ShowTool = Visibility.Collapsed;
+                case (int)FotosDaPiteca.ViewModel.MainWindowViewModel.Tools.Smudge:
+                    Mouse.OverrideCursor = Cursors.Hand;
+                    vm.ShowCircleTool = Visibility.Visible;
+                    break;
+                case (int)FotosDaPiteca.ViewModel.MainWindowViewModel.Tools.Crop:
+                    //Mouse.OverrideCursor = Cursors.Hand;
+                    //vm.ShowRectangleTool = Visibility.Visible;
+                    break;
+                default:
+                    Mouse.OverrideCursor = Cursors.Arrow;
+                    vm.ShowCircleTool = Visibility.Collapsed;
+                    vm.ShowRectangleTool = Visibility.Collapsed;
+                    break;
             }
         }
 
         private void ImgBig_MouseLeave(object sender, MouseEventArgs e)
         {
             Mouse.OverrideCursor = Cursors.Arrow;
-            vm.ShowTool = Visibility.Collapsed;
+            vm.ShowCircleTool = Visibility.Collapsed;
+            //vm.ShowRectangleTool = Visibility.Collapsed;
         }
 
         private void ImgBig_MouseDown(object sender, MouseButtonEventArgs e)
@@ -125,5 +155,40 @@ namespace FotosDaPiteca
         {
 
         }
+
+
+
+        private void brdTopLeft_MouseEnter(object sender, MouseEventArgs e)
+        {
+            currSquare = (Border)sender;
+        }
+
+
+
+
+        //Point ptInit;
+        //private void Border_MouseDown(object sender, MouseButtonEventArgs e)
+        //{
+        //    if (e.LeftButton == MouseButtonState.Pressed)
+        //    {
+        //       ptInit = e.GetPosition((IInputElement)sender);
+        //    }
+        //}
+
+        //private void Border_MouseMove(object sender, MouseEventArgs e)
+        //{
+        //    if (e.LeftButton == MouseButtonState.Pressed)
+        //    {
+        //        var point = e.GetPosition((IInputElement)sender);
+        //        var pointdiff = new Point(ptInit.X - point.X, ptInit.Y - point.Y);
+        //        Rect r = vm.RectangleTool;
+        //        vm.RectangleTool = new Rect(new Point(r.X - pointdiff.X, r.Y - pointdiff.Y), r.BottomRight);
+        //    }
+        //}
+
+        //private void Border_MouseUp(object sender, MouseButtonEventArgs e)
+        //{
+
+        //}
     }
 }

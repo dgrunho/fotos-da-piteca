@@ -45,6 +45,7 @@ namespace FotosDaPiteca.ViewModel
         #region "Variables"
         Classes.DrawTools.SmudgeDrawHelper sdh;
         #endregion
+
         #region "Properties"
 
         string _Titulo = "Fotos da Piteca";
@@ -608,18 +609,7 @@ namespace FotosDaPiteca.ViewModel
 
         public RelayCommand AplicarTodos => new RelayCommand(delegate (object o)
         {
-
-            foreach (Photo p in Fotos)
-            {
-                p.Watermark = FotoSelecionada.Watermark;
-                p.WatermarkFont = FotoSelecionada.WatermarkFont;
-                p.WatermarkFontSize = FotoSelecionada.WatermarkFontSize;
-                p.WatermarkPosition = FotoSelecionada.WatermarkPosition;
-                p.WatermarkColor = FotoSelecionada.WatermarkColor;
-                p.UseWatermark = FotoSelecionada.UseWatermark;
-                p.AddShadow = FotoSelecionada.AddShadow;
-            }
-            Task.Factory.StartNew(() => PropertiesMessageQueue.Enqueue("Marca de água aplicada a todas as fotos"));
+            aplicarTodos();
         });
 
         public RelayCommand Memorizar => new RelayCommand(delegate (object o)
@@ -779,7 +769,12 @@ namespace FotosDaPiteca.ViewModel
                     {
                         Console.WriteLine(fs.FullName);
 
-                        FotosExport.Add(new Photo(fs));
+                        Photo tmpPhoto = new Photo(fs);
+                        while (tmpPhoto.IsLoading == true)
+                        {
+                            string espera = "Espera";
+                        }
+                        FotosExport.Add(tmpPhoto);
                     }
                     App.Current.Dispatcher.Invoke((Action)delegate
                                     {
@@ -792,6 +787,36 @@ namespace FotosDaPiteca.ViewModel
                 });
                 IsLoading = false;
             }
+
+
+        }
+
+        async void aplicarTodos()
+        {
+
+                IsLoading = true;
+            await Task.Factory.StartNew(() =>
+            {
+                foreach (Photo p in Fotos)
+                {
+                    p.Watermark = FotoSelecionada.Watermark;
+                    p.WatermarkFont = FotoSelecionada.WatermarkFont;
+                    p.WatermarkFontSize = FotoSelecionada.WatermarkFontSize;
+                    p.WatermarkPosition = FotoSelecionada.WatermarkPosition;
+                    p.WatermarkColor = FotoSelecionada.WatermarkColor;
+                    p.UseWatermark = FotoSelecionada.UseWatermark;
+                    p.AddShadow = FotoSelecionada.AddShadow;
+
+                    while (p.IsLoading == true)
+                    {
+                        string espera = "Espera";
+                    }
+                }
+                Task.Factory.StartNew(() => PropertiesMessageQueue.Enqueue("Marca de água aplicada a todas as fotos"));
+            });
+                
+            IsLoading = false;
+
 
 
         }

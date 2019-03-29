@@ -528,13 +528,17 @@ namespace FotosDaPiteca.Models
         {
             if (Image != null)
             {
-                IsLoading = true;
-                await Task.Factory.StartNew(() =>
+                if (IsLoading != true)
                 {
-                    RenderedImage = PhotoHelper.RenderFinal(this, RenderedImageSize.ToDrawingSize());
-                    RenderedThumb = RenderedImage; //PhotoHelper.RenderThumb(RenderedImage, RenderedThumbSize.ToDrawingSize());
-                });
-                IsLoading = false;
+                    IsLoading = true;
+                    await Task.Factory.StartNew(() =>
+                    {
+                        RenderedImage = PhotoHelper.RenderFinal(this, RenderedImageSize.ToDrawingSize());
+                        RenderedThumb = RenderedImage; //PhotoHelper.RenderThumb(RenderedImage, RenderedThumbSize.ToDrawingSize());
+                    });
+                    IsLoading = false;
+                }
+
             }
 
         }

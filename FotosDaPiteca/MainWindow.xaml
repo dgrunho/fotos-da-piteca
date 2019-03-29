@@ -409,6 +409,12 @@
                                         <Border Margin="0,0,0,0" BorderThickness="1 0 0 0" BorderBrush="{DynamicResource MaterialDesignDivider}"/>
                                     </StackPanel>
                                 </ListBoxItem>
+                                <ListBoxItem Padding="8,8,0,8">
+                                    <StackPanel Orientation="Horizontal">
+                                        <materialDesign:PackIcon Margin="0,0,5,0" Kind="RotateRight" Width="24" Height="24" />
+                                        <Border Margin="0,0,0,0" BorderThickness="1 0 0 0" BorderBrush="{DynamicResource MaterialDesignDivider}"/>
+                                    </StackPanel>
+                                </ListBoxItem>
                             </ListBox>
                             <Border Margin="0 16 0 8" BorderThickness="0 1 0 0" BorderBrush="{DynamicResource MaterialDesignDivider}"/>
                             <StackPanel >

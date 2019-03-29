@@ -104,6 +104,7 @@ namespace FotosDaPiteca.Classes
                             }
 
                         }
+                        bm.Dispose();
                         return ConvertToBitmapSource(bmFinal);
                         //using (MemoryStream msSave = new MemoryStream())
                         //{
@@ -228,7 +229,10 @@ namespace FotosDaPiteca.Classes
                 bms.Freeze();
                 return bms;
             }
-            finally { DeleteObject(handle); }
+            finally {
+                DeleteObject(handle);
+                bitmap.Dispose();
+            }
         }
 
         public static Bitmap ConvertFromBitmapSource(System.Windows.Media.Imaging.BitmapSource bitmapsource)

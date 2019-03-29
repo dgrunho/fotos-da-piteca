@@ -41,6 +41,19 @@ namespace FotosDaPiteca.Classes
                     if (Tamanho.Width == 0) Tamanho.Width = 1;
                     if (Tamanho.Height == 0) Tamanho.Height = 1;
 
+                    if (Foto.RotateDegree == 90)
+                    {
+                        bm.RotateFlip(RotateFlipType.Rotate90FlipNone);
+                    }
+                    else if (Foto.RotateDegree == 180)
+                    {
+                        bm.RotateFlip(RotateFlipType.Rotate180FlipNone);
+                    }
+                    else if (Foto.RotateDegree == 270)
+                    {
+                        bm.RotateFlip(RotateFlipType.Rotate270FlipNone);
+                    }
+
                     float ZoomFactor = Math.Min(Tamanho.Width / bm.Width, Tamanho.Height / bm.Height);
 
                     SizeF ZoomedSize = new SizeF(bm.Width * ZoomFactor, bm.Height * ZoomFactor);

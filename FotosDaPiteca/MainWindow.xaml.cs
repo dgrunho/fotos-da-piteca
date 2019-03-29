@@ -22,6 +22,7 @@ namespace FotosDaPiteca
     {
         ViewModel.MainWindowViewModel vm;
         Border currSquare;
+        int CurrentToolIndex;
 
         public MainWindow()
         {

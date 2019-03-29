@@ -145,6 +145,17 @@ namespace FotosDaPiteca.ViewModel
 
         }
 
+        public List<int> RotationDegrees
+        {
+            get
+            {
+                List<int> _RotationDegrees = new List<int>();
+                _RotationDegrees.AddRange(new int[] { 0, 90, 180, 270 });
+                return _RotationDegrees;
+            }
+
+        }
+
         Photo _FotoSelecionada = new Photo();
         public Photo FotoSelecionada
         {

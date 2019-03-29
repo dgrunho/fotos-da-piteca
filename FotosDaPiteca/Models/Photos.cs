@@ -477,6 +477,26 @@ namespace FotosDaPiteca.Models
             }
         }
 
+        int _RotateDegree = 0;
+        public int RotateDegree
+        {
+            get
+            {
+                return _RotateDegree;
+            }
+            set
+            {
+                if (_RotateDegree != value)
+                {
+                    _RotateDegree = value;
+                    RaisePropertyChanged("RotateDegree");
+                    RenderImage();
+                }
+            }
+        }
+
+
+
         bool _IsLoading = false;
         public bool IsLoading
         {

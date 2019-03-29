@@ -409,10 +409,35 @@
                                         <Border Margin="0,0,0,0" BorderThickness="1 0 0 0" BorderBrush="{DynamicResource MaterialDesignDivider}"/>
                                     </StackPanel>
                                 </ListBoxItem>
-                                <ListBoxItem Padding="8,8,0,8">
+                                <ListBoxItem Padding="0" VerticalContentAlignment="Stretch">
                                     <StackPanel Orientation="Horizontal">
-                                        <materialDesign:PackIcon Margin="0,0,5,0" Kind="RotateRight" Width="24" Height="24" />
-                                        <Border Margin="0,0,0,0" BorderThickness="1 0 0 0" BorderBrush="{DynamicResource MaterialDesignDivider}"/>
+                                        <materialDesign:PopupBox StaysOpen="True" Margin="5,0,5,0">
+                                            <materialDesign:PopupBox.ToggleContent>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                                        <StackPanel Orientation="Horizontal">
+                                                            <materialDesign:PackIcon Kind="RotateRight" Foreground="{DynamicResource MaterialDesignBody}" Width="24" Height="24" />
+                                                            
+                                                        </StackPanel>
+                                                    </StackPanel>
+                                                    <Path Width="8" Height="8"
+                                              Margin="5"
+                                              Stretch="Uniform"
+                                              HorizontalAlignment="Right"
+                                              VerticalAlignment="Center"
+                                              Data="M7,10L12,15L17,10H7Z"
+                                              Fill="{DynamicResource MaterialDesignBody}" />
+                                                </StackPanel>
+
+                                            </materialDesign:PopupBox.ToggleContent>
+                                            <Grid Margin="10">
+                                                <ListBox ItemsSource="{Binding Path=DataContext.RotationDegrees, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:MainWindow}}}" 
+                                                         SelectedValue="{Binding FotoSelecionada.RotateDegree}" >
+                                                </ListBox>
+                                            </Grid>
+
+                                        </materialDesign:PopupBox>
+                                        <Border Margin="0,8,0,8" BorderThickness="1 0 0 0" BorderBrush="{DynamicResource MaterialDesignDivider}"/>
                                     </StackPanel>
                                 </ListBoxItem>
                             </ListBox>
